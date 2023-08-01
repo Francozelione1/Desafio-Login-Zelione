@@ -1,3 +1,6 @@
+import { log } from 'console'
+import {promises as fs} from 'fs'
+
 class Producto {
     constructor(title, description, price, thumbnail, code, stock){
         this.title = title,
@@ -16,9 +19,11 @@ class ProductManager{
         this.productId = 1
     }
 
-    addProduct(producto){
+    async addProduct(producto){
 
-        const productoRepetido = this.productos.find((prod) => prod.code===producto.code)
+        const productosJson= JSON.parse(await fs.readFile("./productos.txt", "utf-8"))
+
+        const productoRepetido = productosJson.find( prod => prod.code === producto.codes)
 
         if(!producto.title || !producto.description || !producto.price || !producto.thumbnail || !producto.code || !producto.stock){
             console.log("Todos los campos son obligatorios")
@@ -28,16 +33,22 @@ class ProductManager{
             console.log("El producto ya se encuentra en el carrito")
             return
         }
-        else{
-            const productoAgregado= {...producto, id: this.productId}
-            this.productId++
-            this.productos.push(productoAgregado)
-            console.log(this.productos);
-        }
+
+        this.productos.push({...producto, id: this.productId})
+        this.productId++
+        await fs.writeFile("./productos.txt", JSON.stringify(this.productos))
+        
     }
 
-    getProducts(){
-        return this.productos
+    async getProducts(){
+
+        const contenidoTxt = await fs.readFile("./productos.txt","utf-8")
+
+        const productosJson= {contenido: contenidoTxt}
+
+        JSON.parse(productosJson)
+
+        return console.log(productosJson);
     }
 
     getProductById(id){
@@ -52,11 +63,35 @@ class ProductManager{
         }
 
     }
+
+    async updateProduct(id, campoActualizar){
+
+        const productosJson = JSON.parse(await fs.readFile("./productos.txt","utf-8"))
+
+        this.productos=[]
+
+        productosJson.map((prod)=>{
+            prod.id === id ? prod={...prod, ...campoActualizar} : prod
+            prod.id === id ? console.log("Producto atualizado") : null
+            this.productos.push(prod)
+        })
+        
+        await fs.writeFile("./productos.txt",JSON.stringify(this.productos))
+
+        console.log(this.productos);
+    }
+    
+    async deleteProduct(id){
+        const productosJson = JSON.parse(await fs.readFile('./productos.txt', 'utf-8'))
+        const productosRestantes = productosJson.filter(prod => prod.id != id)
+        await fs.writeFile('./productos.txt', JSON.stringify(productosRestantes))
+        console.log(productosRestantes);
+    }
 }
 
 const productManager= new ProductManager()
 
-productManager.addProduct({
+await productManager.addProduct({
     title: "God Of War",
     description: "JuegoPsn",
     price: 20,
@@ -65,16 +100,7 @@ productManager.addProduct({
     stock: 10,
 })
 
-productManager.addProduct({
-    title: "Uncharted",
-    description: "JuegoPsn",
-    price: 20,
-    thumbnail: "img",
-    code: "uncharted",
-    stock: 10,
-})
-
-productManager.addProduct({
+await productManager.addProduct({
     title: "Uncharted",
     description: "JuegoPsn",
     price: 20,
@@ -85,4 +111,8 @@ productManager.addProduct({
 
 productManager.getProductById(1)
 productManager.getProductById(2)
-productManager.getProductById(3)
+
+await productManager.updateProduct(1, {stock: 7})
+await productManager.deleteProduct(2)
+
+
