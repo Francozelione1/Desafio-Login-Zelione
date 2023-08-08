@@ -1,5 +1,6 @@
-import { log } from 'console'
+
 import {promises as fs} from 'fs'
+
 
 class Producto {
     constructor(title, description, price, thumbnail, code, stock){
@@ -12,7 +13,7 @@ class Producto {
     }
 }
 
-class ProductManager{
+export class ProductManager{
 
     constructor(){
         this.productos=[],
@@ -42,24 +43,24 @@ class ProductManager{
 
     async getProducts(){
 
-        const contenidoTxt = await fs.readFile("./productos.txt","utf-8")
+        const contenidoTxt = JSON.parse(await fs.readFile("./productos.txt","utf-8"))
 
-        const productosJson= {contenido: contenidoTxt}
+        const productosJson= contenidoTxt
 
-        JSON.parse(productosJson)
-
-        return console.log(productosJson);
+        return (productosJson);
     }
 
-    getProductById(id){
+    async getProductById(id){
 
-        const idBuscado = this.productos.find((prod)=> prod.id === id)
+        const productosJson= JSON.parse(await fs.readFile("./productos.txt","utf-8"))
+
+        const idBuscado = productosJson.find((prod)=> prod.id === id)
 
         if(idBuscado){
-            console.log(idBuscado);
+            return(idBuscado);
         }
         else{
-            console.log("Not Found");
+            return("Not Found");
         }
 
     }
@@ -109,10 +110,11 @@ await productManager.addProduct({
     stock: 10,
 })
 
-productManager.getProductById(1)
-productManager.getProductById(2)
+//productManager.getProductById(1)
+//productManager.getProductById(2)
 
-await productManager.updateProduct(1, {stock: 7})
-await productManager.deleteProduct(2)
+//await productManager.updateProduct(1, {stock: 7})
+//await productManager.deleteProduct(2)
 
+await productManager.getProducts()
 
