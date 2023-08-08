@@ -26,6 +26,10 @@ server.get("/products/:id", async (req,res)=>{
     prod ? res.send(prod) : res.send("Not Found")
 })
 
+server.get("*",(req,res)=>{
+    res.send("Not found")
+})
+
 server.listen(PORT, ()=>{
     console.log(`Esta logeado en el puerto ${PORT}`);
 })
