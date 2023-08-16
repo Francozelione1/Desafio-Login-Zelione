@@ -1,1 +1,0 @@
-[{"title":"God Of War","description":"JuegoPsn","price":20,"thumbnail":"img","code":"godofwar","stock":10,"id":1},{"title":"Uncharted","description":"JuegoPsn","price":20,"thumbnail":"img","code":"uncharted","stock":10,"id":2}]

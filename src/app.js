@@ -1,30 +1,23 @@
-import {ProductManager} from "./main.js"
 import express from "express"
+import routerProd  from "./routes/products.routes.js"
+import routerCart from "./routes/cart.routes.js"
+import { __dirname } from "./path.js"
+import path from "path"
 
 
 const PORT = 4000
 
 const server = express()
 
-const manager = new ProductManager()
-
+// Middlewares
+server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 
-server.get("/products", async (req,res)=>{
-    const {limite} = req.query
-    const productos = await manager.getProducts()
-    if(limite){
-        res.send(productos.slice(0, limite))
-    }
-    else{
-        res.send(productos)
-    }
-})
+// Routes
+server.use('/api/products', routerProd);
+server.use('/api/carts', routerCart);
 
-server.get("/products/:id", async (req,res)=>{
-    const prod = await manager.getProductById(Number(req.params.id))
-    prod ? res.send(prod) : res.send("Not Found")
-})
+server.use('/static', express.static(path.join(__dirname, '/public')));
 
 server.get("*",(req,res)=>{
     res.send("Not found")
