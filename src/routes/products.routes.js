@@ -4,7 +4,7 @@ import { Router } from "express"
 
 const PORT = 4000
 
-const manager = new ProductManager()
+const manager = new ProductManager("./models/productos.txt")
 const routerProd = Router()
 
 
@@ -62,7 +62,7 @@ routerProd.delete("/:pid", async(req,res)=>{
 
     const productoExistente = await manager.deleteProduct(Number(pid))
 
-    if(!productoExistente){
+    if(productoExistente){
         res.status(200).send("Producto eliminado correctamente")
     }
     else{

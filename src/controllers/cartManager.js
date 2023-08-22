@@ -3,7 +3,8 @@ import { promises as fs } from 'fs';
 
 export class CartManager {
 
-    constructor(){
+    constructor(pathFile){
+        this.path= pathFile
         this.carts= []
         this.productId = 0
     }
@@ -17,18 +18,18 @@ export class CartManager {
             products: []
         }
         
-        const carritos = JSON.parse(await fs.readFile("../src/models/cart.txt", "utf-8"))
+        const carritos = JSON.parse(await fs.readFile(this.path, "utf-8"))
         this.carts= carritos
        // const carritoRepetido = carritos.find(cart => cart.id === newCart.id)
         this.carts.push(newCart)
-        await fs.writeFile("../src/models/cart.txt", JSON.stringify(this.carts))
+        await fs.writeFile(this.path, JSON.stringify(this.carts))
         return newCart;
         
     }
 
     async getCartById(id){
 
-        const carritos = JSON.parse(await fs.readFile("../src/models/cart.txt", "utf-8"))
+        const carritos = JSON.parse(await fs.readFile(this.path, "utf-8"))
 
         const carritoBuscado = carritos.find(carrito => carrito.id===id)
 
@@ -43,7 +44,7 @@ export class CartManager {
 
     async addProduct(cid, pid){
 
-        const carritos = JSON.parse(await fs.readFile("../src/models/cart.txt", "utf-8"))
+        const carritos = JSON.parse(await fs.readFile(this.path, "utf-8"))
 
         this.carts= carritos
 
@@ -58,13 +59,13 @@ export class CartManager {
             if(productoParaAgregar){
                 productoParaAgregar.quantity ? productoParaAgregar.quantity++ : productoParaAgregar.quantity=1
                 this.carts[carritoBuscado].products.map(prod=> prod.id === pid ? prod={id:pid, quantity: prod.quantity} : prod)
-                await fs.writeFile("../src/models/cart.txt", JSON.stringify(this.carts))
+                await fs.writeFile(this.path, JSON.stringify(this.carts))
                 return true
                 //console.log("Producto ya existente, se incrementó en 1 la cantidad");
             }
             else{
                 this.carts[carritoBuscado].products.push({id:pid, quantity:1})
-                await fs.writeFile("../src/models/cart.txt", JSON.stringify(this.carts))
+                await fs.writeFile(this.path, JSON.stringify(this.carts))
                 return true
                 //console.log("Producto agregado");
             }
@@ -78,11 +79,11 @@ export class CartManager {
     
 }
 
-
+/*
 const cartManager = new CartManager()
 
 await cartManager.newCart()
 await cartManager.newCart()
 await cartManager.newCart()
 
-await cartManager.addProduct(1,1)
+await cartManager.addProduct(1,1)*/

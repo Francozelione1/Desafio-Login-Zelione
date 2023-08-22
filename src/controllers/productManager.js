@@ -15,20 +15,21 @@ class Producto {
 
 export class ProductManager{
 
-    constructor(){
+    constructor(filePath){
         this.productos=[],
         this.productId = 1
+        this.filePath = filePath
     }
 
     async addProduct(producto){
 
-        const productosJson= JSON.parse(await fs.readFile("../src/models/productos.txt", "utf-8"))
+        const productosJson= JSON.parse(await fs.readFile(this.filePath, "utf-8"))
 
         const productoRepetido = productosJson.find( prod => prod.code === producto.codes)
 
         if(!producto.title || !producto.description || !producto.price || !producto.thumbnail || !producto.code || !producto.stock){
             console.log("Todos los campos son obligatorios")
-            return
+            return true
         }
         else if(productoRepetido){
             console.log("El producto ya se encuentra en el carrito")
@@ -37,13 +38,13 @@ export class ProductManager{
 
         this.productos.push({...producto, id: this.productId})
         this.productId++
-        await fs.writeFile("../src/models/productos.txt", JSON.stringify(this.productos))
+        await fs.writeFile(this.filePath, JSON.stringify(this.productos))
         return false
     }
 
     async getProducts(){
 
-        const contenidoTxt = JSON.parse(await fs.readFile("../src/models/productos.txt","utf-8"))
+        const contenidoTxt = JSON.parse(await fs.readFile(this.filePath,"utf-8"))
 
         const productosJson= contenidoTxt
 
@@ -52,7 +53,7 @@ export class ProductManager{
 
     async getProductById(id){
 
-        const productosJson= JSON.parse(await fs.readFile("../src/models/productos.txt","utf-8"))
+        const productosJson= JSON.parse(await fs.readFile(this.filePath,"utf-8"))
 
         const idBuscado = productosJson.find((prod)=> prod.id === id)
 
@@ -60,14 +61,14 @@ export class ProductManager{
             return(idBuscado);
         }
         else{
-            return("Not Found");
+            return false;
         }
 
     }
 
     async updateProduct(id, campoActualizar){
 
-        const productosJson = JSON.parse(await fs.readFile("../src/models/productos.txt","utf-8"))
+        const productosJson = JSON.parse(await fs.readFile(this.filePath,"utf-8"))
 
         let productoExistente = false
 
@@ -79,21 +80,25 @@ export class ProductManager{
             this.productos.push(prod)
         })
         
-        await fs.writeFile("../src/models/productos.txt",JSON.stringify(this.productos))
+        await fs.writeFile(this.filePath,JSON.stringify(this.productos))
 
         return productoExistente
     }
     
     async deleteProduct(id){
-        const productosJson = JSON.parse(await fs.readFile('../src/models/productos.txt', 'utf-8'))
+        const productosJson = JSON.parse(await fs.readFile(this.filePath, 'utf-8'))
+        let productoEliminado = productosJson.find((prod)=>prod.id===id)
+        productoEliminado ? productoEliminado=true:productoEliminado=false
         const productosRestantes = productosJson.filter((prod) => prod.id != id)
-        await fs.writeFile('../src/models/productos.txt', JSON.stringify(productosRestantes))
+        await fs.writeFile(this.filePath, JSON.stringify(productosRestantes))
         //console.log(productoExistente);
-        return 
+        return productoEliminado
     }
 }
 
-const productManager= new ProductManager()
+
+/*
+//const productManager= new ProductManager()
 
 await productManager.addProduct({
     title: "God Of War",
@@ -123,3 +128,4 @@ await productManager.updateProduct(1, {stock: 7})
 
 //await productManager.getProducts()
 
+*/

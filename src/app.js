@@ -1,6 +1,6 @@
-import express from "express"
-import routerProd  from "./routes/products.routes.js"
-import routerCart from "./routes/cart.routes.js"
+import express from 'express'
+import routerProd from './routes/products.routes.js'
+import routerCart from './routes/cart.routes.js'
 import { __dirname } from "./path.js"
 import path from "path"
 
