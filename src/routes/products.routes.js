@@ -2,8 +2,6 @@ import {ProductManager} from "../controllers/productManager.js"
 import { Router } from "express"
 
 
-const PORT = 4000
-
 const manager = new ProductManager("./models/productos.txt")
 const routerProd = Router()
 

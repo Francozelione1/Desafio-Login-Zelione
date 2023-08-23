@@ -1,0 +1,11 @@
+nav{
+    display: flex;
+    gap: 20px;   
+}
+
+a{
+    color: blue;
+    text-decoration: none;
+    text-transform: none;
+    font-size: 25px;
+}

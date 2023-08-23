@@ -27,7 +27,7 @@ export class ProductManager{
 
         const productoRepetido = productosJson.find( prod => prod.code === producto.codes)
 
-        if(!producto.title || !producto.description || !producto.price || !producto.thumbnail || !producto.code || !producto.stock){
+        if(!producto.title || !producto.description || !producto.price || !producto.status || !producto.code || !producto.stock){
             console.log("Todos los campos son obligatorios")
             return true
         }
@@ -44,10 +44,7 @@ export class ProductManager{
 
     async getProducts(){
 
-        const contenidoTxt = JSON.parse(await fs.readFile(this.filePath,"utf-8"))
-
-        const productosJson= contenidoTxt
-
+        const productosJson = JSON.parse(await fs.readFile(this.filePath , "utf-8"))
         return (productosJson);
     }
 
