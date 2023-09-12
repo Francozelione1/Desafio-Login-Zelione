@@ -1,71 +1,86 @@
-import {ProductManager} from "../controllers/productManager.js"
+import productoModel from "../models/productos.model.js"
 import { Router } from "express"
 
-
-const manager = new ProductManager("./models/productos.txt")
 const routerProd = Router()
 
-
 routerProd.get("/", async (req,res)=>{
-    const {limite} = req.query
-    const productos = await manager.getProducts()
-    if(limite){
-        res.status(200).send(productos.slice(0, Number(limite)))
+    let { category, limit, page } = req.query
+    Number(page)
+    Number(limit)
+    const options = {
+        page: req.query.page || 1,  
+        limit: req.query.limit || 10, 
+    };
+    category = category || "psn"
+    try{
+        const productos= await productoModel.paginate({category}, options)
+        res.status(200).send({resultado: "Ok", contenido: productos})
     }
-    else{
-        res.status(404).send(productos)
+    catch(e){
+        res.status(404).send({resultado: "error", error: e})
     }
 })
 
 routerProd.get("/:pid", async (req,res)=>{
     const {pid} = req.params
-    const prod = await manager.getProductById(Number(pid))
-    prod ? res.status(200).send(prod) : res.status(404).send("Not Found")
+    try{
+        const producto= await productoModel.findById(pid)
+        res.status(200).send({resultado: "Ok", contenido: producto})
+    }
+    catch(e){
+        res.status(404).send({resultado: "error", error: e})
+    }
 })
-
 
 routerProd.post("/", async(req,res)=>{
 
-    const productoNuevo= req.body
+    const { title, description, stock, code, price, category,  status, thumbnails } = req.body
 
-    const productoRepetido = await manager.addProduct(productoNuevo)
-
-    if(productoRepetido){
-        res.status(404).send("Producto ya existente")
+    try{
+        const productoNuevo= await productoModel.create({
+            title, description, stock, code, price, category, status, thumbnails})
+        res.status(200).send({resultado: "Ok", contenido: productoNuevo})
     }
-    else{
-        res.status(200).send("Producto agregado correctamente")
+    catch(e){
+        res.status(404).send({resultado: "error", error: e})
     }
-
 })
 
 routerProd.put("/:pid", async(req,res)=>{
 
     const {pid} = req.params
+    const { title, description, stock, code, price, category } = req.body
 
-    const productoExistente = await manager.updateProduct(Number(pid), req.body)
-    
-    if(productoExistente){
-        res.status(200).send("Producto actualizado correctamente")
+    try{
+        const productoActualizado = await productoModel.findByIdAndUpdate(pid, { title, description, stock, code, price, category })
+        if(productoActualizado){
+            res.status(200).send({resultado: "Ok", contenido: productoActualizado})
+        }
+        else{
+            res.status(404).send({resultado: "error", error: "Producto no encontrado"})
+        }
     }
-    else{
-        res.status(404).send("Producto no existente")
+    catch(e){
+        res.status(404).send({resultado: "error", error: e})
     }
-
 })
 
 routerProd.delete("/:pid", async(req,res)=>{
 
-    const {pid} = req.params
+   const {pid} = req.params
 
-    const productoExistente = await manager.deleteProduct(Number(pid))
-
-    if(productoExistente){
-        res.status(200).send("Producto eliminado correctamente")
-    }
-    else{
-        res.status(404).send("Producto no encontrado")
-    }
+   try{
+        const productoEliminado = await productoModel.findByIdAndDelete(pid)
+        if(productoEliminado){
+            res.status(200).send({resultado: "ok", contenido: productoEliminado})
+        }
+        else{
+            res.status(404).send({resultado: "error", error: "Producto no encontrado"})
+        }
+   }
+   catch(e){
+        res.status(404).send({resultado: "error", error: e})
+   }
 })
 
 export default routerProd

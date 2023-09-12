@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { CartManager } from "../controllers/cartManager.js";
+import cartModel from "../models/carts.model.js";
 
 const manager = new CartManager("./models/cart.txt")
 
@@ -8,7 +9,7 @@ const routerCart = Router()
 routerCart.get("/:cid", async(req,res)=>{
 
     const {cid}= req.params
-    const carrito = await manager.getCartById(Number(cid))
+    const carrito = await cartModel.findById(cid)
     
     if(carrito){
         res.status(200).send(carrito)
