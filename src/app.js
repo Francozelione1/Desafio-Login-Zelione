@@ -34,10 +34,10 @@ mongoose.connect("mongodb+srv://fzelionelenzi:coderhousefzelionelenzi@cluster0.z
 	.then(req => {
 		console.log("BD conectada");
 
-		cartModel.create({
+		/*cartModel.create({
 			idProd: new mongoose.Types.ObjectId(), // Genera un nuevo ObjectId automáticamente
   			quantity: 5 // Puedes cambiar la cantidad según tus necesidades
-		})
+		})*/
 
 	})
 	.catch(error => {
@@ -67,7 +67,17 @@ app.get('/static', (req, res) => {
 app.get('/static/realtimeproducts', (req, res) => {
 	res.render('realTimeProducts', {
 		rutaCSS: 'realTimeProducts',
-		rutaJS: 'realTimeProducts',
+		rutaJS: 'realTimeProducts'
+	});
+});
+
+app.get('/static/:cid', (req, res) => {
+	const {cid} = req.params
+	console.log(cid);
+	res.render('home', {
+		rutaCSS: 'home',
+		rutaJS: 'home',
+		cid
 	});
 });
 
@@ -89,6 +99,18 @@ io.on("connection", socket => {
 		socket.emit('productos', productos);
 	});
 
+
+	socket.on("cargarJuegosSegunCarrito", async (cid) =>{
+
+		try{
+			const carrito= await cartModel.findById(cid)
+			console.log(cid);
+			socket.emit('productosCarrito', carrito.products);
+		}
+		catch(e){
+			console.log(e);
+		}
+	})
 })
 
 app.get("*", (req, res) => {
