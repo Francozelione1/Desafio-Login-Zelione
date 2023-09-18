@@ -8,8 +8,7 @@ import { Server } from 'socket.io';
 import mongoose from 'mongoose'
 import productoModel from './models/productos.model.js'
 import cartModel from './models/carts.model.js'
-
-
+import session from 'express-session'
 
 
 const PORT = 4000
@@ -21,14 +20,6 @@ const server = app.listen(PORT, () => {
 })
 
 const io = new Server(server);
-/*mongoose.connect("mongodb+srv://fzelionelenzi:coderhousefzelionelenzi@cluster0.z3ja11i.mongodb.net/?retryWrites=true&w=majority")
-.then(req=>{
-	console.log("BD conectada");
-})
-.catch(error=>{
-	console.log("Error en conexion a MongoDb Atlas: ",error);
-})*/
-
 
 mongoose.connect("mongodb+srv://fzelionelenzi:coderhousefzelionelenzi@cluster0.z3ja11i.mongodb.net/?retryWrites=true&w=majority")
 	.then(req => {
@@ -49,6 +40,13 @@ mongoose.connect("mongodb+srv://fzelionelenzi:coderhousefzelionelenzi@cluster0.z
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(session({ //Configuracion de la sesion de mi app
+    secret: process.env.SESSION_SECRET,
+    resave: true,
+    saveUninitialized: true
+}))
+
 app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
 app.set('views', path.resolve(__dirname, './views'));
