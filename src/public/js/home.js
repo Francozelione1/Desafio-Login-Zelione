@@ -2,6 +2,8 @@ const socket = io()
 
 const contenedorProductos= document.getElementById("contenedorProductos")
 
+const mensajeBienvenida = document.getElementById("mensajeBienvenida")
+
 socket.emit("cargarJuegos")
 
 socket.on("productos", productos =>{
@@ -20,12 +22,12 @@ socket.on("productos", productos =>{
     `
   });
 
-
 })
 
 let logout = document.getElementById("logout")
 
 if(session){
+    mensajeBienvenida.innerText=`Bienvenido/a: ${nombre}`
     logout.innerText="Logout"
     logout.className = ("logoutButton")
 }

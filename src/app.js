@@ -62,11 +62,15 @@ app.use("/api/sessions", routerSessions)
 app.get('/static', (req, res) => {
 
 	let session = req.session.login
+	let nombre= req.session.nombre
+
+	console.log(nombre);
 
 	res.render('home', {
 		rutaCSS: 'home',
 		rutaJS: 'home',
-		session: session
+		session: session,
+		nombre
 	});
 });
 

@@ -16,15 +16,18 @@ routerSessions.post('/login', async(req,res)=>{
     try {
         const { email, password } = req.body;
 
+        const user = await userModel.findOne({ email: email });
+
         if (req.session.login) {
+           req.session.nombre = user.first_name 
            return res.redirect("http://localhost:4000/static/")
            return res.status(200).json({ resultado: 'Login ya existente' });
         }
 
-        const user = await userModel.findOne({ email: email });
 
         if (user) {
             if (user.password == password) {
+                req.session.nombre = user.first_name 
                 req.session.login = true;
                return res.redirect("http://localhost:4000/static/")
             } 
