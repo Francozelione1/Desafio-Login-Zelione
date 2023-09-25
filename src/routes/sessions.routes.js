@@ -1,6 +1,9 @@
-import { Schema, model, syncIndexes } from "mongoose";
 import userModel from "../models/users.models.js";
 import { Router } from "express";
+import { createHash, validatePassword } from "../utils/bcrypt.js";
+import passport from "passport";
+import local from "passport-local";
+
 
 const routerSessions = Router()
 
@@ -10,46 +13,55 @@ routerSessions.get('/login', (req, res) => {
     console.log("metodo GET");
 });
 
-routerSessions.post('/login', async(req,res)=>{
+routerSessions.post('/login', passport.authenticate("login") ,async(req,res)=>{
     console.log('Ruta POST /login alcanzada');
 
-    try {
-        const { email, password } = req.body;
+    try{
 
-        const user = await userModel.findOne({ email: email });
-
-        if (req.session.login) {
-           req.session.nombre = user.first_name 
-           return res.redirect("http://localhost:4000/static/")
-           return res.status(200).json({ resultado: 'Login ya existente' });
+        if (!req.user) { // Si no existe el usuario
+            console.log("Usuario invalido");
+            return res.status(401).send({ mensaje: "Usuario invalido" })
         }
 
-
-        if (user) {
-            if (user.password == password) {
-                req.session.nombre = user.first_name 
-                req.session.login = true;
-               return res.redirect("http://localhost:4000/static/")
-            } 
-            else {
-              return res.status(401).send({mensaje: "No autorizado"})
-            }
-        } 
-        else {
-            return res.status(404).send("usuario no encontrado")
+        req.session.user = { // defino el user de la session
+            first_name: req.user.first_name,
+            last_name: req.user.last_name,
+            age: req.user.age,
+            email: req.user.email,
+            rol: req.user.rol
         }
-    } catch (error) {
-       return res.status(400).send({error:error})
+
+        req.session.login = true // defino la session como true
+
+        console.log("Usuario logueado");
+
+        res.redirect("http://localhost:4000/static/") // redirecciono al home
+
+        //res.status(200).send({ mensaje: "Usuario logueado", user: req.session.user, url: "http://localhost:4000/static/" }) // envio el user de la session // funciona pero no se bien como
+
+    }
+    catch(error){
+        res.status(500).send({ mensaje: error})
     }
 });
+
+routerSessions.get('/github', passport.authenticate('github', { scope: ['user:email'] }), async (req, res) => {
+    res.status(200).send({ mensaje: 'Usuario creado' })
+})
+
+
+routerSessions.get('/githubSession', passport.authenticate('github'), async (req, res) => {
+    req.session.user = req.user
+    res.status(200).send({ mensaje: 'Session creada' })
+})
 
 routerSessions.get('/logout', (req, res) => {
     if (req.session.login) {
         req.session.destroy()
     }
     res.redirect("http://localhost:4000/api/sessions/login")
-    //res.status(200).send({ resultado: 'Sesion cerrada' })
 })
+
 
 
 export default routerSessions

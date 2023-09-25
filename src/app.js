@@ -14,6 +14,8 @@ import MongoStore from 'connect-mongo'
 import routerSessions from './routes/sessions.routes.js'
 import routerUsers from './routes/users.routes.js'
 import cookieParser from 'cookie-parser'
+import { initializePassport } from './config/passport.js'
+import passport from 'passport'
 
 
 const PORT = 4000
@@ -58,11 +60,14 @@ app.use('/api/products', routerProd);
 app.use('/api/carts', routerCart);
 app.use("/api/users", routerUsers)
 app.use("/api/sessions", routerSessions)
+initializePassport()
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.get('/static', (req, res) => {
 
 	let session = req.session.login
-	let nombre= req.session.nombre
+	let nombre= req.session.user.first_name
 
 	console.log(nombre);
 
