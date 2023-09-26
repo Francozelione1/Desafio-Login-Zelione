@@ -67,7 +67,7 @@ app.use(passport.session())
 app.get('/static', (req, res) => {
 
 	let session = req.session.login
-	let nombre= req.session.user.first_name
+	let nombre= req.session.nombre
 
 	console.log(nombre);
 

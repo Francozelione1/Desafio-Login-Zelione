@@ -31,6 +31,7 @@ routerSessions.post('/login', passport.authenticate("login") ,async(req,res)=>{
             rol: req.user.rol
         }
 
+        req.session.nombre = req.nombre // defino el nombre de la session
         req.session.login = true // defino la session como true
 
         console.log("Usuario logueado");

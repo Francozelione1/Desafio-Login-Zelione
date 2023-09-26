@@ -113,7 +113,7 @@
         const rol = document.getElementById('rol').value;
         const age = document.getElementById('age').value;
 
-        fetch("",{
+        fetch("http://localhost:4000/api/users/register",{
             method: "POST",
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -126,9 +126,10 @@
             console.log(response)
             respuesta.innerHTML=`${response.mensaje}`
 
-            if(response.mensaje=="Usuario creado"){
+            if(response.status == 200){
                 window.location.href = "http://localhost:4000/static/"
             }
+            
         })
 
         .catch(e => console.log(e))

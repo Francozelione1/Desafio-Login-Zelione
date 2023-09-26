@@ -12,11 +12,13 @@ export const initializePassport = () => {
     passport.use('register', new LocalStrategy(
         { passReqToCallback: true, usernameField: 'email' }, async (req, username, password , done) => { //Defino como voy a registrar un user // Defino que mi username va a ser el email
             
-            const { first_name, last_name, email, age } = req.body
+            console.log("estoy en el register de passport");
+
+            const { first_name, last_name, email, age, rol } = req.body
             try {
                 const usuarioExistente = await userModel.findOne({ email: username })
                 if (usuarioExistente) {
-                    return done(null, false, { message: 'Usuario ya existente' }) // el primer parametro es el error (no hay, por eso el null), el segundo es el resultado de la creacion del usuario y el tercero es el mensaje
+                    return done(null, false, { mensaje: 'Usuario ya existente' }) // el primer parametro es el error (no hay, por eso el null), el segundo es el resultado de la creacion del usuario y el tercero es el mensaje
                 }
                 else {
                     const contraseñaEncriptada = createHash(password)
@@ -27,6 +29,7 @@ export const initializePassport = () => {
                         password: contraseñaEncriptada,
                         age: age
                     })
+                    req.nombre = usuarioCreado.first_name
                     return done(null, usuarioCreado)
                 }
             } catch (error) {
@@ -36,7 +39,9 @@ export const initializePassport = () => {
         }
     ))
 
-    passport.use("login", new LocalStrategy({usernameField: 'email' }, async (username, password, done) =>{  //Defino como voy a loguear un user)
+    passport.use("login", new LocalStrategy({passReqToCallback: true ,usernameField: 'email' }, async (req,username, password, done) =>{  //Defino como voy a loguear un user)
+
+        console.log("estoy en el login de passport");
 
         try {    
             const user = await userModel.findOne({ email: username });
@@ -46,6 +51,7 @@ export const initializePassport = () => {
             }
 
             if (validatePassword(password, user.password)) { // Valido la contraseña
+               req.nombre=user.first_name 
                return done(null, user)
             }
             
