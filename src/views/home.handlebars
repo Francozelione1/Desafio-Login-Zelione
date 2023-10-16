@@ -1,7 +1,15 @@
 <h3>Productos</h3>
 
-<p id="mensajeBienvenida"></p>
+
+<!-- <h1 id="mensajeBienvenida"></h1>  -->
+
+{{#if nombre}}
+  <h1>Bienvenido/a, {{nombre}}</h1>
+{{/if}}
 
 <div id="contenedorProductos"></div>
 
-<button id="logout"></button>
+{{#if nombre}}
+    <button id="logout"></button>
+{{/if}}
+

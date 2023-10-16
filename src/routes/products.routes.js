@@ -1,5 +1,6 @@
-import productoModel from "../models/productos.model.js"
-import { Router } from "express"
+import { Router } from "express";
+import productoModel from "../models/productos.model.js";
+import { passportError, authorization } from "../utils/messageErrors.js";
 
 const routerProd = Router()
 
@@ -32,7 +33,7 @@ routerProd.get("/:pid", async (req,res)=>{
     }
 })
 
-routerProd.post("/", async(req,res)=>{
+routerProd.post("/", passportError('jwt'), authorization('admin') ,async(req,res)=>{
 
     const { title, description, stock, code, price, category,  status, thumbnails } = req.body
 

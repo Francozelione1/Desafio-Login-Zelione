@@ -1,15 +1,15 @@
 import  userModel  from "../models/users.models.js";
-import  Router  from "express";
+import  {Router}  from "express";
 import { createHash, validatePassword } from "../utils/bcrypt.js";
 import passport from "passport";
 
-const routerUsers = Router()
+const userRouter = Router()
 
-routerUsers.get("/register", async (req,res) => {
-    res.render("register")
+userRouter.get("/register", async (req,res) => {
+    res.render('register')
 })
 
-routerUsers.post("/register", passport.authenticate("register") , async (req,res)=>{
+userRouter.post("/register", passport.authenticate("register") , async (req,res)=>{
     console.log("estoy en el post de register");
     
     try {
@@ -25,4 +25,4 @@ routerUsers.post("/register", passport.authenticate("register") , async (req,res
     
 })
 
-export default routerUsers
+export default userRouter
