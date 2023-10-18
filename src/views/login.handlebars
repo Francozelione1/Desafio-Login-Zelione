@@ -73,7 +73,6 @@
 <script>
 
     document.getElementById('submitButton').addEventListener('click', function () {
-        console.log('Manejador de envío ejecutado');
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
 
@@ -85,20 +84,21 @@
                 },
                 body: new URLSearchParams({ email, password }),
             })
-                .then(response => {
-                    response.json();
-                    if (response.status == 200) {
-                        console.log("estoy en el login handlebars");
-                        window.location.href = "http://localhost:4000/static/";
-                    } else {
-                        console.log("estoy en el else del login handlebars");
-                        return console.log(response);
-                    }
-                })
-                .catch(error => console.log(error))
+            .then(response => response.json())
+            .then(response => {
+                console.log(response.status);
+                if (response.status == 200) {
+                    //console.log("estoy en el login handlebars");
+                    window.location.href = "http://localhost:4000/static/";
+                } else {
+                    //console.log("estoy en el else del login handlebars");
+                    return console.log(response.mensaje);
+                }
+            })
+            .catch(error => console.log(error))
         }
         catch (error) {
-            console.log(error);
+            console.log(error.message);
         }
     });
 

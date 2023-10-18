@@ -5,8 +5,6 @@ import jwt from 'passport-jwt'
 import { createHash, validatePassword } from '../utils/bcrypt.js'
 import userModel from '../models/users.models.js'
 
-
-
 //Defino la estrategia a utilizar
 const LocalStrategy = local.Strategy
 const JWTStrategy = jwt.Strategy
@@ -15,11 +13,8 @@ const ExtractJWT = jwt.ExtractJwt //Extractor de los headers de la consulta
 export const initializePassport = () => {
 
     const cookieExtractor = req => {
-        //console.log("estoy en el cookie extractor");
-        //console.log(req.cookies)
         //{} no hay cookies != no exista mi cookie
         const token = req.cookies ? req.cookies.jwtCookie : {} //Si existen cookies, consulte por mi cookie y sino asigno {}
-        //console.log(token)
         return token
     }
 
@@ -28,10 +23,9 @@ export const initializePassport = () => {
         secretOrKey: process.env.JWT_SECRET
     }, async (jwt_payload, done) => {
         try {
-            //console.log(jwt_payload)
             return done(null, jwt_payload.user) //Retorno el user que me genera el token
         } catch (error) {
-            return done(error)
+            return done(error.message)
         }
 
     }))
@@ -40,10 +34,8 @@ export const initializePassport = () => {
     //done es como si fuera un res.status(), el callback de respuesta
     passport.use('register', new LocalStrategy(
         { passReqToCallback: true, usernameField: 'email' }, async (req, username, password , done) => { //Defino como voy a registrar un user // Defino que mi username va a ser el email
-            
-            console.log("estoy en el register de passport");
 
-            const { first_name, last_name, email, age, rol } = req.body
+            const { first_name, last_name, email, age } = req.body
             try {
                 const usuarioExistente = await userModel.findOne({ email: username })
                 if (usuarioExistente) {
@@ -62,19 +54,15 @@ export const initializePassport = () => {
                     return done(null, usuarioCreado)
                 }
             } catch (error) {
-                return done(null, error)
+                return done(null, error.message)
             }
-
         }
     ))
 
-    passport.use("login", new LocalStrategy({passReqToCallback: true ,usernameField: 'email' }, async (req,username, password, done) =>{  //Defino como voy a loguear un user)
-
-        console.log("estoy en el login de passport");
+    passport.use("login", new LocalStrategy({passReqToCallback: true ,usernameField: 'email' }, async (req,username, password, done) =>{  //Defino como voy a loguear un user
 
         try {    
             const user = await userModel.findOne({ email: username });
-            console.log(user);
     
             if (!user) {
                return done(null, false, { message: 'Usuario no encontrado' })
@@ -82,14 +70,14 @@ export const initializePassport = () => {
 
             if (validatePassword(password, user.password)) { // Valido la contraseña
                req.nombre = user.first_name 
-               console.log("la contraseña es correcta");
+               req.user = user
                return done(null, user)
             }
             
             return done(null, false, { message: 'Contraseña incorrecta' }) // Contraseña invalida
            
         } catch (error) {
-           return done(null, error)
+           return done(null, error.message)
         }
 
     }))

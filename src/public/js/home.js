@@ -2,8 +2,6 @@ const socket = io()
 
 const contenedorProductos = document.getElementById("contenedorProductos")
 
-/*const mensajeBienvenida = document.getElementById("mensajeBienvenida")*/
-
 socket.emit("cargarJuegos")
 
 socket.on("productos", productos => {

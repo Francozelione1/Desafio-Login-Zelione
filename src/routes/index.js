@@ -7,9 +7,11 @@ import userRouter from "./users.routes.js";
 const router = Router()
 
 router.get('/static/cargarJuegosForm', (req, res) => {
+	
 	res.render('cargarJuegosForm', {
 		rutaCSS: 'realTimeProducts',
-		rutaJS: 'cargarJuegosForm'
+		rutaJS: 'cargarJuegosForm',
+
 	});
 });
 

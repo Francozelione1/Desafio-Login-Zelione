@@ -2,7 +2,6 @@ import passport from "passport";
 
 //Funcion general retornar errores en las estrategias de passport
 
-
 //Primer filtro de cualquier estrategia de passport
 export const passportError = (strategy) => {
     return async (req, res, next) => {
@@ -15,7 +14,6 @@ export const passportError = (strategy) => {
                 return res.status(401).send({ error: info.messages ? info.messages : info.toString() }) //Si me envian info.messages, muestro la respuesta que me enviaron sino muestro el objeto info pasado a string (pueden enviar info.messages = "Usuario no valido" o info = "User no validado")
             }
 
-          
             req.user = user
             next()
         })(req, res, next) //Esto es por que se trata de un Middlewares

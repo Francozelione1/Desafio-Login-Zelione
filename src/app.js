@@ -63,7 +63,7 @@ app.set('view engine', 'handlebars');
 app.set('views', path.resolve(__dirname, './views'));
 
 // Routes
-app.use('/', router)
+
 initializePassport()
 app.use(passport.initialize())
 app.use(passport.session())
@@ -83,12 +83,13 @@ app.get('/static/', (req, res) => {
 	});
 });
 
-app.use('/static', express.static(path.join(__dirname, '/public')));
+app.use('/static/', express.static(path.join(__dirname, '/public')));
 
+app.use('/', router)
 
 // Socket.io
 
-io.on("connection", socket => {
+io.on("connection", socket => { // primer argumento: evento, segundo argumento: callback
 
 	socket.on('cargarJuegos', async () => {
 		const productos = await productoModel.find();
@@ -96,9 +97,15 @@ io.on("connection", socket => {
 	});
 
 	socket.on('productoNuevo', async (product) => {
-		await productoModel.create({...product});
-		const productos = await productoModel.find();
-		socket.emit('productos', productos);
+		const productoCreado = await productoModel.create({...product});
+		let mensaje= ""
+		if(productoCreado){
+			mensaje = "Producto creado"
+		}
+		else{
+			mensaje = "Fallo al crear producto"
+		}
+		socket.emit('productoCreado', {mensaje});
 	});
 
 

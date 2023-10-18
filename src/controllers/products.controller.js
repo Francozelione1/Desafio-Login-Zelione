@@ -1,4 +1,4 @@
-import productoModel from "../models/productos.model"
+import productoModel from "../models/productos.model.js"
 
 export const getProducts = async (req, res) => {
     const { limit, page, filter, sort } = req.query
@@ -14,10 +14,10 @@ export const getProducts = async (req, res) => {
             return res.status(200).send(products)
         }
 
-        res.status(404).send({ error: "Productos no encontrados" })
+        return res.status(404).send({ error: "Productos no encontrados" })
 
     } catch (error) {
-        res.status(500).send({ error: `Error en consultar productos ${error}` })
+        return res.status(500).send({ error: `Error en consultar productos ${error}` })
     }
 
 }
@@ -31,10 +31,10 @@ export const getProduct = async (req, res) => {
             return res.status(200).send(product)
         }
 
-        res.status(404).send({ error: "Producto no encontrado" })
+        return res.status(404).send({ error: "Producto no encontrado" })
 
     } catch (error) {
-        res.status(500).send({ error: `Error en consultar producto ${error}` })
+        return res.status(500).send({ error: `Error en consultar producto ${error}` })
     }
 }
 
@@ -49,7 +49,7 @@ export const postProduct = async (req, res) => {
             return res.status(201).send(product)
         }
 
-        res.status(404).send({ error: "Producto no encontrado" })
+        return res.status(404).send({ error: "Producto no encontrado" })
 
     } catch (error) {
         if (error.code == 11000) {
@@ -71,10 +71,10 @@ export const putProduct = async (req, res) => {
             return res.status(200).send(product)
         }
 
-        res.status(404).send({ error: "Producto no encontrado" })
+        return res.status(404).send({ error: "Producto no encontrado" })
 
     } catch (error) {
-        res.status(500).send({ error: `Error en actualizar producto ${error}` })
+        return res.status(500).send({ error: `Error en actualizar producto ${error}` })
     }
 }
 
@@ -88,9 +88,9 @@ export const deleteProduct = async (req, res) => {
             return res.status(200).send(product)
         }
 
-        res.status(404).send({ error: "Producto no encontrado" })
+        return res.status(404).send({ error: "Producto no encontrado" })
 
     } catch (error) {
-        res.status(500).send({ error: `Error en eliminar producto ${error}` })
+        return res.status(500).send({ error: `Error en eliminar producto ${error}` })
     }
 }
