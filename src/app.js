@@ -1,28 +1,23 @@
 import 'dotenv/config'
 import express from 'express'
-import routerProd from './routes/products.routes.js'
-import routerCart from './routes/cart.routes.js'
 import { __dirname } from "./path.js"
 import path from "path"
 import { engine } from 'express-handlebars';
 import { Server } from 'socket.io';
 import mongoose from 'mongoose'
-import productoModel from './models/productos.model.js'
-import cartModel from './models/carts.model.js'
 import session from 'express-session'
 import MongoStore from 'connect-mongo'
-import routerSessions from './routes/sessions.routes.js'
-import routerUsers from './routes/users.routes.js'
 import cookieParser from 'cookie-parser'
 import { initializePassport } from './config/passport.js'
 import passport from 'passport'
 import router from './routes/index.js'
+import eventosSocket from './eventosSocket/eventosSocket.js'
 
 const PORT = 4000
 
 const app = express()
 
-const server = app.listen(PORT, () => {
+export const server = app.listen(PORT, () => {
 	console.log(`Server on port ${PORT}`)
 })
 
@@ -89,38 +84,7 @@ app.use('/', router)
 
 // Socket.io
 
-io.on("connection", socket => { // primer argumento: evento, segundo argumento: callback
-
-	socket.on('cargarJuegos', async () => {
-		const productos = await productoModel.find();
-		socket.emit('productos', productos);
-	});
-
-	socket.on('productoNuevo', async (product) => {
-		const productoCreado = await productoModel.create({...product});
-		let mensaje= ""
-		if(productoCreado){
-			mensaje = "Producto creado"
-		}
-		else{
-			mensaje = "Fallo al crear producto"
-		}
-		socket.emit('productoCreado', {mensaje});
-	});
-
-
-	socket.on("cargarJuegosSegunCarrito", async (cid) =>{
-
-		try{
-			const carrito= await cartModel.findById(cid)
-			console.log(cid);
-			socket.emit('productosCarrito', carrito.products);
-		}
-		catch(e){
-			console.log(e);
-		}
-	})
-})
+eventosSocket(io); // Se administran los eventos de socket.io
 
 app.get("*", (req, res) => {
 	res.send("Not found")
