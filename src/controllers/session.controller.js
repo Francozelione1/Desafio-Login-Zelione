@@ -22,9 +22,8 @@ export const postLogin = async (req, res) => {
         }
 
         const user = req.session.user
-
-        const token = generateToken(req.user)
-   
+        const token = generateToken(user)
+        
         res.cookie('jwtCookie', token, {
             maxAge: 43200000,
             httpOnly: false
@@ -35,7 +34,7 @@ export const postLogin = async (req, res) => {
 
         console.log("Usuario logueado");
 
-        return res.status(200).send({url: "http://localhost:4000/static/", user, status: 200})
+        return res.status(200).send({url: "http://localhost:4000/static/", user, status: 200 , token})
 
     }
     catch(error){

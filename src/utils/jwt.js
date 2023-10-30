@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 
 export const generateToken = (user) => {
     const token = jwt.sign({ user }, "coderhouse", { expiresIn: '12h' })// 1° parametro: Objeto asociado al token, 2° parametro: Clave privada para el cifrado, 3° parametro: Tiempo de expiracion
+    return token
 }
 
 //console.log(generateToken({"_id":"651303fab125561823d14bf9","first_name":"Franco","last_name":"Zelione Lenzi","email":"francozelione796@gmail.com","password":"$2b$16$rABlgmZU.gazy0UI6iK6K.K7cIdHBwBqnQJn9jM5IBcW1z1FMSfEy","rol":"user","age":{"$numberInt":"21"}}))// muestro el token generado de mi usuario

@@ -62,10 +62,10 @@ export const postProduct = async (req, res) => {
 }
 
 export const putProduct = async (req, res) => {
-    const { id } = req.params
+    const { pid } = req.params
     const { title, description, code, price, stock, category } = req.body
     try {
-        const product = await productoModel.findByIdAndUpdate(id, { title, description, code, price, stock, category })
+        const product = await productoModel.findByIdAndUpdate(pid, { title, description, code, price, stock, category })
 
         if (product) {
             return res.status(200).send(product)
