@@ -11,12 +11,12 @@ routerCart.get("/:cid", passportError('jwt'), authorization('admin'), getCart) /
 
 routerCart.post("/", postCart) // CREA UN NUEVO CARRITO
 
-routerCart.put("/:cid", putCart) // AGREGA UN PRODUCTO AL CARRITO
+routerCart.put("/:cid", passportError('jwt'), authorization('user') ,putCart) // AGREGA UN PRODUCTO AL CARRITO
 
-routerCart.put("/:cid/products/:pid", putProductCart) // MODIFICA LA CANTIDAD DE UN PRODUCTO EN UN CARRITO
+routerCart.put("/:cid/products/:pid", passportError('jwt'), authorization('user') ,putProductCart) // MODIFICA LA CANTIDAD DE UN PRODUCTO EN UN CARRITO
 
-routerCart.delete("/:cid/products/:pid", deleteProductCart) // ELIMINA UN PRODUCTO DE UN CARRITO
+routerCart.delete("/:cid/products/:pid", passportError('jwt'), authorization('user') ,deleteProductCart) // ELIMINA UN PRODUCTO DE UN CARRITO
 
-routerCart.delete("/:cid", deleteCart) // ELIMINA UN CARRITO
+routerCart.delete("/:cid", authorization('admin') ,deleteCart) // ELIMINA UN CARRITO
 
 export default routerCart
