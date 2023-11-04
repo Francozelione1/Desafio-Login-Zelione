@@ -4,6 +4,8 @@ import GithubStrategy from 'passport-github2'
 import jwt from 'passport-jwt'
 import { createHash, validatePassword } from '../utils/bcrypt.js'
 import userModel from '../models/users.models.js'
+import { CustomError } from '../services/customErrors.js'
+import { th } from '@faker-js/faker'
 
 //Defino la estrategia a utilizar
 const LocalStrategy = local.Strategy
@@ -35,11 +37,16 @@ export const initializePassport = () => {
     passport.use('register', new LocalStrategy(
         { passReqToCallback: true, usernameField: 'email' }, async (req, username, password , done) => { //Defino como voy a registrar un user // Defino que mi username va a ser el email
 
-            const { first_name, last_name, email, age } = req.body
             try {
+                const { first_name, last_name, email, age } = req.body
+
+                if(!first_name || !last_name || !email || !age){
+                    throw CustomError.createError("Error", "Error en los datos ingresados", "Faltan datos", 1)
+                }
                 const usuarioExistente = await userModel.findOne({ email: username })
                 if (usuarioExistente) {
-                    return done(null, false, { mensaje: 'Usuario ya existente' }) // el primer parametro es el error (no hay, por eso el null), el segundo es el resultado de la creacion del usuario y el tercero es el mensaje
+                    //throw CustomError.createError("Error", "Ya existe un usuario con ese nombre", "Usuario ya existente", 3)
+                    return done(null, false, { message: 'Usuario ya existente' }) // el primer parametro es el error (no hay, por eso el null), el segundo es el resultado de la creacion del usuario y el tercero es el mensaje
                 }
                 else {
                     const contraseñaEncriptada = createHash(password)
@@ -50,6 +57,11 @@ export const initializePassport = () => {
                         password: contraseñaEncriptada,
                         age: age
                     })
+
+                    /*if(!usuarioCreado){
+                        throw CustomError.createError("Error", "Error en la base de datos", "No se pudo crear el usuario", 2)
+                    }*/
+
                     req.nombre = usuarioCreado.first_name
                     return done(null, usuarioCreado)
                 }
@@ -73,8 +85,11 @@ export const initializePassport = () => {
                req.user = user
                return done(null, user)
             }
+            else{
+                throw CustomError.createError("Error", "No se ingresó la contraseña correcta para ese usuario", "Contraseña incorrecta", 3)
+            }
             
-            return done(null, false, { message: 'Contraseña incorrecta' }) // Contraseña invalida
+            //return done(null, false, { message: 'Contraseña incorrecta' }) // Contraseña invalida
            
         } catch (error) {
            return done(null, error.message)
@@ -107,7 +122,7 @@ export const initializePassport = () => {
 
         }
         catch(error){
-            return done(null, error)
+            return done(null, error.message)
         }
 
     }))

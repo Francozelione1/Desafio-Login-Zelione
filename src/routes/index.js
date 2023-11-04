@@ -4,6 +4,7 @@ import productRouter from "./products.routes.js";
 import sessionRouter from "./sessions.routes.js";
 import userRouter from "./users.routes.js";
 import routerTicket from "./ticket.routes.js";
+import { routerFaker } from "./faker.routes.js";
 
 const router = Router()
 
@@ -32,5 +33,6 @@ router.use('/api/users', userRouter)
 router.use('/api/carts', cartRouter)
 router.use('/api/sessions', sessionRouter)
 router.use('/api/tickets', routerTicket)
+router.use('/api/faker', routerFaker)
 
 export default router

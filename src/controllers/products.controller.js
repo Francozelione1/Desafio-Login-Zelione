@@ -1,4 +1,5 @@
 import productoModel from "../models/productos.model.js"
+import { CustomError } from "../services/customErrors.js"
 
 export const getProducts = async (req, res) => {
     const { limit, page, filter, sort } = req.query
@@ -40,9 +41,14 @@ export const getProduct = async (req, res) => {
 
 export const postProduct = async (req, res) => {
 
-    const { title, description, code, price, stock, category } = req.body
-
     try {
+
+        const { title, description, code, price, stock, category } = req.body
+
+        if(!title || !description || !code || !price || !stock || !category){
+            throw CustomError.createError("Error", "Error en los datos ingresados", "Faltan datos", 1)
+        }
+
         const product = await productoModel.create({ title, description, code, price, stock, category })
 
         if (product) {
@@ -55,7 +61,7 @@ export const postProduct = async (req, res) => {
         if (error.code == 11000) {
             return res.status(400).send({ error: `Llave duplicada` })
         } else {
-            return res.status(500).send({ error: `Error en consultar producto ${error}` })
+            return res.status(500).send({ error: `Error en crear producto: ${error.message}`})
         }
 
     }

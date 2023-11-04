@@ -56,9 +56,9 @@ export const putCart = async (req, res) => {
         for (let productoAgregar of productosParaAgregar) {
             
             const productoExistente = await productoModel.findById(productoAgregar.idProd)
-            
+
             if(!productoExistente){
-                return res.status(404).send({resultado: "Producto no encontrado"})
+                throw CustomError.createError("Error", "Error en los datos ingresados", "No existe tal producto", 3)
             }
 
             let productoEncontrado = cart.products.find(productoCarrito => productoCarrito.idProd == productoAgregar.idProd)
