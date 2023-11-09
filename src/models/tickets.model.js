@@ -29,16 +29,16 @@ const ticketSchema = new Schema({
         default: id,
         //required: true
     },
-    user: {
+    purchaser: {
         type: String,
         required: true
     },
-    date: {
+    purchase_datetime: {
         type: Date,
         default: Date.now(),
         //required: true
     },
-    total: {
+    amount: {
         type: Number,
         required: true
     }

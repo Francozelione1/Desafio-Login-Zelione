@@ -10,6 +10,7 @@ export const finalizarCompra = async (req, res) => {
 
         const carrito = await cartModel.findById(cid) // Busco el carrito del usuario
         const productos = await productoModel.find({})// Busco todos los productos de la base de datos
+        let sumaTotal= 0
 
         const productosProcesados = []
 
@@ -21,6 +22,7 @@ export const finalizarCompra = async (req, res) => {
                 // Productos que se pueden comprar
                 if (productoUsuario.quantity <= productoEncontrado.stock) {
                     productoEncontrado.stock -= productoUsuario.quantity
+                    sumaTotal += productoEncontrado.price * productoUsuario.quantity
                     productosProcesados.push({ price: productoEncontrado.price, quantity: productoUsuario.quantity, idProd: productoEncontrado._id })
                     // OTRA OPCION ERA IR FILTRANDO DEL CARRITO DE USUARIO LOS PRODUCTOS QUE SE PUEDEN COMPRAR
                 }
@@ -31,14 +33,14 @@ export const finalizarCompra = async (req, res) => {
             }
         }
 
-        const precioFinal = productosProcesados.reduce((total, producto) => total + (producto.price * producto.quantity), 0);
+        //const precioFinal = productosProcesados.reduce((total, producto) => total + (producto.price * producto.quantity), 0);
 
         const userEmail = req.session.user.email
 
         const nuevoTicket = await ticketModel.create({
             products: productosProcesados,
-            user: userEmail,
-            total: precioFinal
+            purchaser: userEmail,
+            amount: sumaTotal
         })
 
         //Verifico si se pudo crear el ticket para luego modificar el carrito del usuario y ademas descontar el stock de los productos

@@ -2,7 +2,6 @@ import ticketModel from "../models/tickets.model.js";
 import cartModel from "../models/carts.model.js";
 import productoModel from "../models/productos.model.js";
 import userModel from "../models/users.models.js";
-import { CustomError } from "../services/customErrors.js";
 
 export const getRegister = async (req, res) => {
     res.render('register')

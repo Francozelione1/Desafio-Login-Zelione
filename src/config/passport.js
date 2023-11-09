@@ -4,8 +4,7 @@ import GithubStrategy from 'passport-github2'
 import jwt from 'passport-jwt'
 import { createHash, validatePassword } from '../utils/bcrypt.js'
 import userModel from '../models/users.models.js'
-import { CustomError } from '../services/customErrors.js'
-import { th } from '@faker-js/faker'
+import CustomError from '../services/errors/customErrors.js'
 
 //Defino la estrategia a utilizar
 const LocalStrategy = local.Strategy
@@ -40,12 +39,25 @@ export const initializePassport = () => {
             try {
                 const { first_name, last_name, email, age } = req.body
 
-                if(!first_name || !last_name || !email || !age){
-                    throw CustomError.createError("Error", "Error en los datos ingresados", "Faltan datos", 1)
-                }
+
+                if (!first_name || !last_name || !email || !age || !password) {
+					CustomError.createError({
+						name: 'Error de creación de usuario',
+						cause: generateUserErrorInfo({
+							first_name,
+							last_name,
+							email,
+							age,
+							password
+						}),
+						message: 'Error al crear usuario',
+						code: EErrors.MISSING_OR_INVALID_USER_DATA,
+					})
+				}
+                
                 const usuarioExistente = await userModel.findOne({ email: username })
                 if (usuarioExistente) {
-                    //throw CustomError.createError("Error", "Ya existe un usuario con ese nombre", "Usuario ya existente", 3)
+                    
                     return done(null, false, { message: 'Usuario ya existente' }) // el primer parametro es el error (no hay, por eso el null), el segundo es el resultado de la creacion del usuario y el tercero es el mensaje
                 }
                 else {
@@ -66,7 +78,7 @@ export const initializePassport = () => {
                     return done(null, usuarioCreado)
                 }
             } catch (error) {
-                return done(null, error.message)
+                return done(null, error)
             }
         }
     ))

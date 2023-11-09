@@ -1,5 +1,4 @@
 import { generateToken } from '../utils/jwt.js'
-import { CustomError } from '../services/customErrors.js'
 
 export const getLogin = async (req, res) => {
     return res.render('login', { rutaCSS: 'login', rutaJS: 'login' })
@@ -10,8 +9,7 @@ export const postLogin = async (req, res) => {
     try{
 
         if (!req.user) { // Si no existe el usuario
-            throw CustomError.createError("Error", "No se encontró el usuario", "Usuario no encontrado", 3)
-            //return res.status(401).send({ mensaje: "Usuario invalido" })
+            return res.status(401).send({ mensaje: "Usuario invalido" })
         }
 
         req.session.user = { // defino el user de la session

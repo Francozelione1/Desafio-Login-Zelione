@@ -1,5 +1,7 @@
 import productoModel from "../models/productos.model.js"
-import { CustomError } from "../services/customErrors.js"
+import CustomError from "../services/errors/customErrors.js"
+import EErrors from '../services/errors/enums.js';
+import { generateProductErrorInfo } from '../services/errors/info.js';
 
 export const getProducts = async (req, res) => {
     const { limit, page, filter, sort } = req.query
@@ -45,8 +47,13 @@ export const postProduct = async (req, res) => {
 
         const { title, description, code, price, stock, category } = req.body
 
-        if(!title || !description || !code || !price || !stock || !category){
-            throw CustomError.createError("Error", "Error en los datos ingresados", "Faltan datos", 1)
+        if ((!title || !description || !code || !price || !stock || !category)) {
+            CustomError.createError({
+                name: 'Error de creación de producto',
+                cause: generateProductErrorInfo({ title, description, code, price, stock, category }),
+                message: 'Error al crear producto',
+                code: EErrors.MISSING_OR_INVALID_PRODUCT_DATA
+            })
         }
 
         const product = await productoModel.create({ title, description, code, price, stock, category })
@@ -61,7 +68,7 @@ export const postProduct = async (req, res) => {
         if (error.code == 11000) {
             return res.status(400).send({ error: `Llave duplicada` })
         } else {
-            return res.status(500).send({ error: `Error en crear producto: ${error.message}`})
+            return res.status(500).send({ error: `Error en crear producto: ${error}`})
         }
 
     }
@@ -71,6 +78,16 @@ export const putProduct = async (req, res) => {
     const { pid } = req.params
     const { title, description, code, price, stock, category } = req.body
     try {
+
+        if ((!title || !description || !code || !price || !stock || !category)) {
+            CustomError.createError({
+                name: 'Error de creación de producto',
+                cause: generateProductErrorInfo({ title, description, code, price, stock, category }),
+                message: 'Error al crear producto',
+                code: EErrors.MISSING_OR_INVALID_PRODUCT_DATA
+            })
+        }
+        
         const product = await productoModel.findByIdAndUpdate(pid, { title, description, code, price, stock, category })
 
         if (product) {
