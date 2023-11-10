@@ -12,6 +12,7 @@ import { initializePassport } from './config/passport.js'
 import passport from 'passport'
 import router from './routes/index.js'
 import eventosSocket from './eventosSocket/eventosSocket.js'
+import errorHandler from './services/errors/errorHandler.js';
 
 const PORT = 4000
 
@@ -81,6 +82,7 @@ app.get('/static/', (req, res) => {
 app.use('/static/', express.static(path.join(__dirname, '/public')));
 
 app.use('/', router)
+app.use(errorHandler)
 
 // Socket.io
 
