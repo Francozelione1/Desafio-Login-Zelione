@@ -1,3 +1,20 @@
 {"level":"error","message":"Contraseña invalida","timestamp":"2023-11-12T02:27:05.304Z"}
 {"level":"fatal","message":"Esto es un logger de fatal","timestamp":"2023-11-12T02:36:43.902Z"}
 {"level":"error","message":"Esto es un logger de error","timestamp":"2023-11-12T02:36:43.902Z"}
+{"level":"error","message":"Faltan datos para crear el usuario","timestamp":"2023-11-12T02:43:11.157Z"}
+{"level":"error","message":"Faltan datos para crear el usuario","timestamp":"2023-11-12T02:45:07.697Z"}
+{"level":"error","message":"Faltan datos para crear el usuario","timestamp":"2023-11-12T02:45:29.850Z"}
+{"level":"error","message":"Faltan datos para crear el usuario","timestamp":"2023-11-12T02:47:14.881Z"}
+{"level":"fatal","message":"Esto es un logger de fatal","timestamp":"2023-11-12T02:47:28.040Z"}
+{"level":"fatal","message":"Esto es un logger de fatal","timestamp":"2023-11-12T02:47:28.040Z"}
+{"level":"error","message":"Esto es un logger de error","timestamp":"2023-11-12T02:47:28.041Z"}
+{"level":"fatal","message":"Esto es un logger de fatal","timestamp":"2023-11-12T02:49:22.538Z"}
+{"level":"fatal","message":"Esto es un logger de fatal","timestamp":"2023-11-12T02:49:22.541Z"}
+{"level":"error","message":"Esto es un logger de error","timestamp":"2023-11-12T02:49:22.546Z"}
+{"level":"fatal","message":"Esto es un logger de fatal","timestamp":"2023-11-12T02:50:31.105Z"}
+{"level":"fatal","message":"Esto es un logger de fatal","timestamp":"2023-11-12T02:50:31.105Z"}
+{"level":"error","message":"Esto es un logger de error","timestamp":"2023-11-12T02:50:31.106Z"}
+{"level":"fatal","message":"Esto es un logger de fatal","timestamp":"2023-11-12T02:51:13.147Z"}
+{"level":"error","message":"Esto es un logger de error","timestamp":"2023-11-12T02:51:13.149Z"}
+{"level":"error","message":"Faltan datos para crear el usuario","timestamp":"2023-11-12T02:51:18.105Z"}
+{"level":"error","message":"Faltan datos para crear el usuario","timestamp":"2023-11-12T02:51:53.378Z"}

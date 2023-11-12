@@ -1,6 +1,7 @@
 import CustomError from "../services/errors/customErrors.js";
 import EErrors from "../services/errors/enums.js";
 import { generateUserErrorInfo } from "../services/errors/info.js";
+import logger from "../utils/logger.js";
 
 export const getRegister = async (req, res) => {
     res.render('register')
@@ -13,6 +14,7 @@ export const validateUserData = (req,res,next) => {
     try {
        
         if ((!email) || (!password) || (!first_name) || (!last_name) || (!age)) {
+            logger.error("Faltan datos para crear el usuario")
             throw CustomError.createError({
                 name: EErrors.MISSING_REQUIRED_FIELDS.name,
                 cause: generateUserErrorInfo({ email, password, first_name, last_name, age }),

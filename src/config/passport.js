@@ -42,7 +42,7 @@ export const initializePassport = () => {
 
 
                 if (!first_name || !last_name || !email || !age || !password) {
-                    logger.error("Faltan datos para crear el usuario")
+                    //logger.error("Faltan datos para crear el usuario")
 					CustomError.createError({
 						name: 'Error de creación de usuario',
 						cause: generateUserErrorInfo({

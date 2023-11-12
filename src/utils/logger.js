@@ -24,28 +24,21 @@ const logger = winston.createLogger({
     transports: [
         new winston.transports.File({
             filename: './logs/errors.log',
-            level: 'fatal',
-            format: winston.format.combine(
-                winston.format.timestamp(),
-                winston.format.json(),
-            ),
-        }),
-        new winston.transports.File({
-            filename: './logs/errors.log',
             level: 'error',
             format: winston.format.combine(
                 winston.format.timestamp(),
                 winston.format.json(),
             ),
         }),
-        /*new winston.transports.Console({
+        new winston.transports.Console({
             filename: './logs/errors.log',
             level: 'debug',
             format: winston.format.combine(
                 winston.format.colorize({ colors: customOptionsLevels.colors }),
                 winston.format.simple(),
             ),
-        })*/
+        })
+        
     ],
 });
 
