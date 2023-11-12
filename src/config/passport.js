@@ -5,6 +5,7 @@ import jwt from 'passport-jwt'
 import { createHash, validatePassword } from '../utils/bcrypt.js'
 import userModel from '../models/users.models.js'
 import CustomError from '../services/errors/customErrors.js'
+import logger from '../utils/logger.js'
 
 //Defino la estrategia a utilizar
 const LocalStrategy = local.Strategy
@@ -41,6 +42,7 @@ export const initializePassport = () => {
 
 
                 if (!first_name || !last_name || !email || !age || !password) {
+                    logger.error("Faltan datos para crear el usuario")
 					CustomError.createError({
 						name: 'Error de creación de usuario',
 						cause: generateUserErrorInfo({
@@ -57,7 +59,7 @@ export const initializePassport = () => {
                 
                 const usuarioExistente = await userModel.findOne({ email: username })
                 if (usuarioExistente) {
-                    
+                    logger.error("Usuario ya existente")
                     return done(null, false, { message: 'Usuario ya existente' }) // el primer parametro es el error (no hay, por eso el null), el segundo es el resultado de la creacion del usuario y el tercero es el mensaje
                 }
                 else {
@@ -74,6 +76,7 @@ export const initializePassport = () => {
                         throw CustomError.createError("Error", "Error en la base de datos", "No se pudo crear el usuario", 2)
                     }*/
 
+                    logger.info("Usuario creado")
                     req.nombre = usuarioCreado.first_name
                     return done(null, usuarioCreado)
                 }
@@ -89,6 +92,7 @@ export const initializePassport = () => {
             const user = await userModel.findOne({ email: username });
     
             if (!user) {
+               logger.info("Usuario no encontrado")
                return done(null, false, { message: 'Usuario no encontrado' })
             }
 
@@ -97,13 +101,15 @@ export const initializePassport = () => {
                req.user = user
                return done(null, user)
             }
-            else{
+            /*else{
                 throw CustomError.createError("Error", "No se ingresó la contraseña correcta para ese usuario", "Contraseña incorrecta", 3)
-            }
+            }*/
             
-            //return done(null, false, { message: 'Contraseña incorrecta' }) // Contraseña invalida
+            logger.error("Contraseña invalida")
+            return done(null, false, { message: 'Contraseña incorrecta' }) // Contraseña invalida
            
         } catch (error) {
+           logger.error(error.message)
            return done(null, error.message)
         }
 

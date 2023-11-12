@@ -1,0 +1,3 @@
+{"level":"error","message":"Contraseña invalida","timestamp":"2023-11-12T02:27:05.304Z"}
+{"level":"fatal","message":"Esto es un logger de fatal","timestamp":"2023-11-12T02:36:43.902Z"}
+{"level":"error","message":"Esto es un logger de error","timestamp":"2023-11-12T02:36:43.902Z"}

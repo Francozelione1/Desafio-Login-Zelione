@@ -1,6 +1,7 @@
 import ticketModel from "../models/tickets.model.js";
 import cartModel from "../models/carts.model.js";
 import productoModel from "../models/productos.model.js";
+import logger from "../utils/logger.js";
 
 
 export const finalizarCompra = async (req, res) => {
@@ -55,6 +56,7 @@ export const finalizarCompra = async (req, res) => {
 
     }
     catch (error) {
+        logger.error("Error generando ticket: "+error.message)
         res.status(404).send({ message: error.message })
     }
 

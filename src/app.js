@@ -13,6 +13,7 @@ import passport from 'passport'
 import router from './routes/index.js'
 import eventosSocket from './eventosSocket/eventosSocket.js'
 import errorHandler from './services/errors/errorHandler.js';
+import logger from './utils/logger.js';
 
 const PORT = 4000
 
@@ -26,7 +27,7 @@ const io = new Server(server);
 
 mongoose.connect(process.env.MONGO_URL)
 	.then(req => {
-		console.log("BD conectada");
+		logger.info("BD conectada");
 	})
 	.catch(error => {
 		console.log("Error en conexion a MongoDb Atlas: ", error);
