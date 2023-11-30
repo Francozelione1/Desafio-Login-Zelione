@@ -1,0 +1,78 @@
+paths:
+  /api/products/:
+    get:
+      summary: Obtener todos los productos
+      tags:
+        - Products
+      responses:
+        "200":
+          description: Productos obtenidos satisfactoriamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Products"
+        "400":
+          description: Error al consultar productos
+  /api/products/{id}:
+    get:
+      summary: Obtener un producto por id
+      tags:
+        - Products by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id del producto
+      responses:
+        "200":
+          description: Producto obtenido satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Products"
+        "400":
+          description: Error al consultar producto
+    
+
+components:
+  schemas:
+    Products:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Id autogenerado de MongoDB
+        title:
+          type: String
+          description: Nombre del producto
+        description:
+          type: String
+          description: Descripción del producto
+        price:
+          type: Number
+          description: Precio del producto
+        stock:
+          type: Number
+          description: Stock del producto
+        thumbnail:
+          type: String
+          description: Imagen del producto
+        code:
+          type: String
+          description: Código del producto
+        category:
+          type: String
+          description: Categoría del producto
+      example:
+        _id: ObjectId('653068151744d61ecafd8e1b')
+        title: juego1
+        description: juego
+        price: 10000
+        stock: 10
+        thumbnail: ""
+        code: 1
+        category: "psn"

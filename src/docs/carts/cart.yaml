@@ -1,0 +1,61 @@
+paths:
+  /api/carts/:
+    get:
+      summary: Obtener todos los carts
+      tags:
+        - All Carts
+      description: Obtiene todos los carritos (solo admin)
+      responses:
+        "200":
+          description: Carts obtenidos satisfactoriamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Carts"
+        "400":
+          description: Error al obtener carritos
+        "401":
+          description: User no autorizado"
+        "404":
+          description: Carritos no encontrados
+          
+  /api/carts/{id}:
+    get:
+      summary: Obtener un carrito por id
+      tags:
+        - Carts by ID
+      description: Obtener un carrito por id
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id del carrito
+      responses:
+        "200":
+          description: Carrito obtenido satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Carts"
+        "400":
+          description: Error al consultar carrito
+        "401":
+          description: User no autorizado
+        "404":
+          description: Carrito no encontrado
+
+components:
+  schemas:
+    Carts:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Id autogenerado de MongoDB
+        products:
+          type: array
+          description: Productos agregados al carrito
