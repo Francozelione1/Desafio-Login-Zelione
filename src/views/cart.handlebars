@@ -1,0 +1,303 @@
+<style>
+    /* Estilos para la estructura del carrito de compras */
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .mainProductosCarrito {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 95vh;
+        padding-top: 50px;
+        background-color: rgb(228, 195, 146);
+        background-size: cover;
+    }
+
+    h1 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    #contenedorProductos {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        row-gap: 50px;
+        place-items: center;
+        padding: 20px;
+        max-width: 100%;
+        width: 70%;
+    }
+
+    hr {
+        border: none;
+        border: 1px solid black;
+        width: 90%;
+    }
+
+    .producto {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 5px solid #ddd;
+        border-radius: 10px;
+        padding: 10px;
+        gap: 10px;
+        width: 80%;
+        text-align: center;
+        background-color: white;
+    }
+
+    .imgJuego {
+        height: 200px;
+        max-height: 200px;
+        width: 80%;
+        object-fit: contain;
+        border-radius: 10px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+
+    .btnEliminar {
+        background-color: #ff0000;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .accionCompra {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        width: 100%;
+    }
+
+    .btnFinalizarCompra {
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 10px 24px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 15px;
+        font-size: roboto-regular;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .btnVaciarCarrito{
+        background-color: red;
+        border: none;
+        color: white;
+        padding: 10px 24px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 15px;
+        font-size: roboto-regular;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .resumen {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        column-gap: 100px;
+        row-gap: 100px;
+        place-items: center;
+        padding: 20px;
+        max-width: 100%;
+        width: 70%;
+    }
+
+    .total{
+        font-size: 20px;
+        font-weight: bold;
+    }
+</style>
+
+<main class="mainProductosCarrito">
+    <h1>Carrito de compras</h1>
+    <hr>
+    <div id="contenedorProductos">
+        {{#each productos}}
+        <div class="producto">
+            <h4>{{getProp this 'title'}}</h4>
+            <img src="{{getProp this 'image'}}" class="imgJuego" alt="">
+            <p>Precio: {{getProp this 'price'}}$</p>
+            <p>Cantidad: {{getProp this 'quantity'}}</p>
+            <button class="btnEliminar" data-product='{{json this}}' data-cart-user='{{json ../cart}}'>Eliminar</button>
+        </div>
+        {{/each}}
+    </div>
+    <hr>
+    <div class="accionCompra">
+        <p data-products="{{json productos}}" data-cart-user="{{json ../cart}}" data-cart-id="{{json cartId}}" class="total"></p>
+        <button class="btnFinalizarCompra">Finalizar compra</button>
+        <button class="btnVaciarCarrito">Vaciar carrito</button>
+    </div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+
+        const btnVaciarCarrito = document.getElementsByClassName("btnVaciarCarrito")[0]
+
+        btnVaciarCarrito.addEventListener('click', vaciarCarrito)
+
+        document.getElementsByClassName("iniciarSesion")[0].remove()
+
+        const total = document.querySelector('.total');
+
+        const productos = JSON.parse(total.dataset.products);
+
+        const cartId = JSON.parse(total.dataset.cartId);
+
+        let totalPrecio = productos.reduce((acc, producto) => {
+            return acc + (producto.price * producto.quantity);
+        }, 0);
+
+        total.textContent = `Total: ${totalPrecio}$`;
+
+        document.querySelectorAll('.btnEliminar').forEach(btn => {
+            btn.addEventListener('click', eliminarProducto);
+        });
+
+        const btnFinalizarCompra = document.querySelector('.btnFinalizarCompra')
+        btnFinalizarCompra.addEventListener('click', () => {
+            if (productos.length > 0) {
+                finalizarCompra()
+            }
+            else {
+                Toastify({
+                    text: `El carrito está vacío`,
+                    duration: 4000,
+                    gravity: "top", // `top` or `bottom`
+                    position: "right", // `left`, `center` or `right`
+                    close: true,
+                    backgroundColor: "linear-gradient(to right, #ff416c, #ff4b2b)"
+                }).showToast();
+            }
+        });
+
+        function finalizarCompra() {
+            fetch(`http://localhost:4000/api/tickets/${cartId}/finalizarCompra`, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data)
+                    if (data.status === 200) {
+                        document.querySelector('.accionCompra').innerHTML = ""
+                        document.querySelector('.mainProductosCarrito').innerHTML = ""
+                        document.querySelector('.mainProductosCarrito').innerHTML =
+                            `
+                        <h1>Compra finalizada</h1>
+                        <p>Gracias por su compra</p>
+                        <p>El total de su compra es de ${data.message.amount}$</p>
+                        <p>Email: ${data.message.purchaser}</p>
+                        <p>Resumen:</p>
+                        <div class="resumen"></div>
+                        `
+                        document.querySelector('.resumen').innerHTML += ""
+                        productos.forEach(prod => {
+                            document.querySelector('.resumen').innerHTML +=
+                                `
+                                <div class="producto">
+                                    <h4>${prod.title}</h4>
+                                    <img src="${prod.image}" class="imgJuego" alt="">
+                                    <p>Precio: ${prod.price}$</p>
+                                    <p>Cantidad: ${prod.quantity}</p>
+                                </div>
+                            `
+                        })
+                    }
+                    if (data.status === 400) {
+                        if (!document.querySelector('.errorFinalizarCompra')) {
+                            document.querySelector('.accionCompra').insertAdjacentHTML('beforeEnd', `<p class="errorFinalizarCompra">No hay stock en los siguiente productos:  ${data.productosSinStock.title}. Stock restante: ${data.productosSinStock.stock} </p>`)
+                            setTimeout(() => {
+                                document.querySelector('.errorFinalizarCompra').remove();
+                            }, 5000);
+                        }
+                    }
+                })
+                .catch(err => { console.log(err.message) });
+        }
+
+        function renderizarCarrito() {
+            console.log("Renderizando carrito con productos:", productos);
+            const contenedorProductos = document.getElementById('contenedorProductos');
+            contenedorProductos.innerHTML = '';
+            productos.forEach(producto => {
+                contenedorProductos.innerHTML += `
+            <div class="producto">
+                <h4>${producto.title}</h4>
+                <img src="${producto.image}" class="imgJuego" alt="">
+                <p>Precio: ${producto.price}$</p>
+                <p>Cantidad: ${producto.quantity}</p>
+                <button class="btnEliminar" data-product='${JSON.stringify(producto)}' data-cart-user='${JSON.stringify(cartId)}'>Eliminar</button>
+            </div>
+        `;
+            });
+
+            // Reasignar event handlers a los botones Eliminar
+            document.querySelectorAll('.btnEliminar').forEach(btn => {
+                btn.addEventListener('click', eliminarProducto);
+            });
+        }
+
+        function eliminarProducto() {
+            const product = JSON.parse(this.dataset.product);
+            const cartUser = JSON.parse(this.dataset.cartUser);
+            fetch(`http://localhost:4000/api/carts/${cartId}/products/${product._id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.resultado === 'ok') {
+                        const index = productos.findIndex(p => p._id === product._id);
+                        if (index > -1) {
+                            productos.splice(index, 1);
+                            totalPrecio -= product.price * product.quantity;
+                            total.textContent = `Total: ${totalPrecio}$`;
+                            renderizarCarrito();
+                        }
+                    }
+                })
+                .catch(err => console.log(err.message));
+        }
+
+        function vaciarCarrito(){
+            fetch(`http://localhost:4000/api/carts/${cartId}/resetCart`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.resultado === 'ok') {
+                        productos.splice(0, productos.length);
+                        totalPrecio = 0;
+                        total.textContent = `Total: ${totalPrecio}$`;
+                        renderizarCarrito();
+                    }
+                })
+                .catch(err => console.log(err.message));
+        }
+    })
+</script>

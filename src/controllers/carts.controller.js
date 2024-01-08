@@ -14,7 +14,7 @@ export const getCarts = async (req, res) => {
 
 }
 
-export const getCart = async (req, res) => {
+export const getCartById = async (req, res) => {
 
     const { cid } = req.params
 
@@ -27,6 +27,36 @@ export const getCart = async (req, res) => {
     }
     catch (e) {
         res.status(400).send({ error: e })
+    }
+
+}
+
+export const getCartUserById = async (req, res) => {
+    const { cid } = req.params
+
+    try {
+        const cart = await cartModel.findById(cid)
+        const productos = await Promise.all(
+            cart.products.map(async (item) => {
+                const producto = await productoModel.findById(item.idProd);
+                return {
+                    ...producto._doc, // o simplemente producto, dependiendo de tu ORM
+                    quantity: item.quantity
+                };
+            })
+        )
+      
+        if(cart){
+            return res.render('cart', {
+                cart: cart,
+                productos: productos,
+                cartId: cart._id
+            })
+        }
+        return res.status(404).send({resultado: "Carrito no encontrado"})
+    }
+    catch (e) {
+        res.status(400).send({ error: e.message })
     }
 
 }
@@ -57,6 +87,10 @@ export const putCart = async (req, res) => {
             
             const productoExistente = await productoModel.findById(productoAgregar.idProd)
 
+            /*if(productoAgregar.quantity > productoExistente.stock){
+                throw CustomError.createError("Error", "Error en los datos ingresados", "No hay stock suficiente", 3)
+            }*/
+
             if(!productoExistente){
                 throw CustomError.createError("Error", "Error en los datos ingresados", "No existe tal producto", 3)
             }
@@ -70,6 +104,7 @@ export const putCart = async (req, res) => {
                 cart.products.push(productoAgregar)
             }
 
+           //await productoModel.findByIdAndUpdate(productoAgregar.idProd, { $inc: { stock: -productoAgregar.quantity } }, { new: true })
         }
 
         const cartUpdated = await cartModel.findByIdAndUpdate(cid, cart, { new: true })
@@ -78,6 +113,7 @@ export const putCart = async (req, res) => {
 
     }
     catch (e) {
+        console.log(e.message);
         res.status(400).send({ error: e.message})
     }
 
@@ -122,14 +158,14 @@ export const deleteProductCart = async (req, res) => {
         if (productoEncontrado) {
             cart.products = cart.products.filter(prod => prod.idProd != pid)
             await cart.save()
-            res.status(200).send({ resultado: "OK", message: cart })
+            res.status(200).send({ resultado: "ok", message: cart })
         } else {
             res.status(404).send({ resultado: "Producto no econtrado" })
         }
 
     }
     catch (e) {
-        res.status(400).send({ error: e })
+        res.status(400).send({ message: e.message })
     }
 
 
@@ -154,4 +190,27 @@ export const deleteCart = async (req, res) => {
         res.status(400).send({ error: e })
     }
 
+}
+
+export const resetCart = async (req, res) => {
+    
+        const { cid } = req.params
+    
+        try {
+            const cart = await cartModel.findById(cid)
+            console.log(cart)
+    
+            if (cart) {
+                cart.products = []
+                await cart.save()
+                res.status(200).send({ resultado: "ok", message: cart })
+            } 
+            else {
+                res.status(404).send({ resultado: "Carrito no encontrado" })
+            }
+    
+        }
+        catch (e) {
+            res.status(400).send({ error: e })
+        }
 }

@@ -31,8 +31,11 @@ const productoSchema = new Schema({
         required: true,
         unique: true
     },
-    thumbnails: []
-
+    thumbnails: [],
+    image:{
+        type: String,
+        default: "https://www.publicdomainpictures.net/pictures/280000/velka/not-found-image-15383864787lu.jpg"
+    }
 })
 
 productoSchema.plugin(paginate)

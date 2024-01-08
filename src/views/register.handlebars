@@ -55,12 +55,9 @@
         }
 </style>
 
-<div>
-
+<main>
     <h1>Crear usuario</h1>
-    <div>
-        
-    </div>
+    
     <form id="loginForm" class="registration-form">
         <div>
             <label for="first_name">first_name:</label>
@@ -85,23 +82,14 @@
         <button type="button" id="submitButton">Crear usuario</button>
     </form>
     
-    <div id="respuesta">
-
-    </div>
-
-
-</div>
+    <div id="respuesta"></div>
+</main>
 
 <script>
-
     let resultado = document.getElementById("submitButton")
-
     let respuesta = document.getElementById("respuesta")
 
-    console.log('Manejador de register alcanzado');
-
     resultado.addEventListener("click", ()=>{
-
         const first_name = document.getElementById("first_name").value
         const last_name = document.getElementById("last_name").value
         const email = document.getElementById('email').value;
@@ -117,18 +105,12 @@
         })
         .then(response=> response.json())
         .then(response=>{
-        
-            console.log(response)
             respuesta.innerHTML=`${response.mensaje}`
 
             if(response.status == 200){
-                window.location.href = "http://localhost:4000/static/"
+                window.location.href = "http://localhost:4000/home/"
             }
-            
         })
-
-        .catch(e => console.log(e))
+        .catch(e => console.log(e.message))
     })
-
-
 </script>

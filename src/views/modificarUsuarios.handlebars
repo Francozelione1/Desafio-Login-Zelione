@@ -1,0 +1,188 @@
+<style>
+    .mainUsuarios{
+        background-color: rgb(228, 195, 146);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		min-height: 95vh;
+		padding-top: 30px;
+		background-size: cover;
+		padding-bottom: 30px;
+    }
+
+    .usuarios {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        row-gap: 50px;
+        place-items: center;
+        padding: 20px;
+        max-width: 100%;
+        width: 90%;
+    }
+
+    .acciones {
+        display: flex;
+    }
+
+    .usuario {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 5px solid #ddd;
+        border-radius: 10px;
+        padding: 20px 0 20px 0;
+        gap: 20px;
+        width: 80%;
+        text-align: center;
+        background-color: white;
+    }
+
+    .usuario p {
+        margin: 0;
+        font-family: robot-regular;
+        font-size: 20px;
+    }
+
+    .eliminar,
+    .modificar {
+        position: relative;
+        justify-self: center;
+        align-self: center;
+        background-color: red;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        margin-right: 5px;
+        transition: background-color 0.3s ease;
+        border-radius: 10px;
+        max-width: 50%;
+    }
+
+    .modificar {
+        background-color: #007BFF;
+    }
+
+    .eliminar:hover,
+    .modificar:hover {
+        opacity: 0.7;
+    }
+
+    .tituloUsuarios{
+        color: black;
+        font-size: 25px;
+        font-family: roboto-regular;
+        font-weight: bolds;
+    }
+
+</style>
+
+<main class="mainUsuarios">
+    <h4 class="tituloUsuarios">USUARIOS</h4>
+    <div class="usuarios">
+        {{#each users}}
+        <div class="usuario">
+            <p class="name">Nombre: {{getProp this 'first_name'}}</p>
+            <p class="email">Email: {{getProp this 'email'}}</p>
+            <p class="rol">Rol: {{getProp this 'rol'}}</p>
+            <div class="acciones">
+                <button class="eliminar">Eliminar</button>
+                <button class="modificar">Modificar</button>
+            </div>
+            <div class="modificar-div" style="display: none;">
+                <input type="text" value="{{getProp this 'rol'}}">
+                <button class="enviar">Enviar</button>
+                <button class="cancelar">X</button>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</main>
+
+
+
+<script>
+
+    document.getElementById("iniciarSesion").remove()
+
+    const eliminar = document.querySelectorAll('.eliminar');
+
+    eliminar.forEach((elemento) => {
+        elemento.addEventListener('click', () => {
+            const nombre = elemento.parentElement.querySelector('p').textContent;
+            const email = elemento.parentElement.querySelector('p:nth-child(2)').textContent;
+            const rol = elemento.parentElement.querySelector('p:nth-child(3)').textContent;
+            const usuario = {
+                email,
+                rol
+            }
+            // Realizar la petición fetch para eliminar el usuario
+            fetch('http://localhost:4000/api/users/deleteUser', {
+                method: 'DELETE',
+                body: JSON.stringify(usuario),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status == 200) {
+                        elemento.parentElement.remove();
+                    }
+                })
+                .catch(err => console.log("soy el error" + err));
+        })
+    })
+
+    const modificar = document.querySelectorAll('.modificar');
+
+    modificar.forEach((elemento) => {
+        elemento.addEventListener('click', () => {
+            const usuarioDiv = elemento.parentElement.parentElement;
+            const email = usuarioDiv.querySelector('.email').textContent;
+            const modificarDiv = usuarioDiv.querySelector('.modificar-div');
+
+            // Mostrar el div de modificar
+            modificarDiv.style.display = 'block';
+
+            const input = modificarDiv.querySelector('input');
+            const enviar = modificarDiv.querySelector('.enviar');
+            const cancelar = modificarDiv.querySelector('.cancelar');
+
+            enviar.addEventListener('click', () => {
+                const nuevoRol = input.value;
+                const usuario = {
+                    email,
+                    rol: nuevoRol
+                }
+
+                // Realizar la petición fetch para modificar el usuario
+                fetch('http://localhost:4000/api/users/modifyUser', {
+                    method: 'PUT',
+                    body: JSON.stringify(usuario),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status == 200) {
+                            console.log(data.mensaje);
+                            // Actualizar el rol en la interfaz
+                            usuarioDiv.querySelector('.rol').textContent = nuevoRol;
+                            // Ocultar el div de modificar
+                            modificarDiv.style.display = 'none';
+                        }
+                    })
+                    .catch(err => console.log("soy el error" + err));
+            })
+
+            cancelar.addEventListener('click', () => {
+                // Ocultar el div de modificar
+                modificarDiv.style.display = 'none';
+            })
+        })
+    })
+
+</script>

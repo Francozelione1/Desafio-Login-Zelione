@@ -1,6 +1,73 @@
-<h3>Crear producto</h3>
+<style>
+	main {
+		background-color: rgb(228, 195, 146);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		min-height: 95vh;
+		padding-top: 30px;
+		background-size: cover;
+		padding-bottom: 30px;
+	}
+
+	.product-form {
+		width: 400px;
+		padding: 20px;
+		background-color: #fff;
+		border-radius: 10px;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	}
+
+	.product-form label {
+		display: block;
+		margin-bottom: 5px;
+		font-weight: bold;
+	}
+
+	.product-form input[type="text"],
+	.product-form input[type="number"],
+	.product-form input[type="file"] {
+		width: 100%;
+		padding: 10px;
+		margin-bottom: 15px;
+		border: 1px solid #ddd;
+		border-radius: 5px;
+	}
+
+	.product-form input[type="checkbox"] {
+		margin-right: 5px;
+	}
+
+	.product-form button {
+		padding: 10px 15px;
+		background-color: #2ecc71;
+		color: #fff;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+
+	.product-form button:hover {
+		background-color: #27ae60;
+	}
+
+	#contenedorProductos {
+		display: flex;
+
+	}
+
+	.contenedorProducto {
+		color: black;
+		font-size: 20px;
+	}
+
+	.crearProducto{
+		font-size: 25px;
+	}
+</style>
 
 <main>
+	<h3 class="crearProducto">Crear producto</h3>
 
 	<form id='formProduct' class="product-form">
 		<label for='title'>Title</label>
@@ -15,10 +82,10 @@
 		<label for='status'>Status</label>
 		<input type='text' name='status' id="status" required />
 
-		<label for='category'>category</label>
+		<label for='category'>Category</label>
 		<input type='text' name='category' id="category" required />
 
-		<label for='thumbnail'>thumbnail</label>
+		<label for='thumbnail'>Thumbnail</label>
 		<input type='text' name='thumbnail' id="thumbnail" required />
 
 		<label for='code'>Code</label>
@@ -27,9 +94,32 @@
 		<label for='stock'>Stock</label>
 		<input type='number' name='stock' id="stock" required />
 
+		<label for="image">Image</label>
+		<input type="text" name="image" id="image" required />
+
 		<button type='submit'>Crear Producto</button>
 	</form>
 
 	<div id='productoCreado'></div>
-
 </main>
+
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		const form = document.getElementById("formProduct")
+		const productoCreado = document.getElementById("productoCreado")
+		const socket = io();
+
+		document.getElementById("iniciarSesion").remove()
+
+		form.addEventListener('submit', e => {
+			e.preventDefault();
+			const dataForm = new FormData(e.target);
+			const producto = Object.fromEntries(dataForm);
+			socket.emit('productoNuevo', producto);
+			socket.on('productoCreado', (data) => {
+				productoCreado.innerText = `${data.mensaje}`
+			})
+			e.target.reset()
+		})
+	})
+</script>

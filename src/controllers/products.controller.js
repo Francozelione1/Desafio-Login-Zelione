@@ -133,3 +133,20 @@ export const deleteProduct = async (req, res) => {
         return res.status(500).send({ error: `Error en eliminar producto ${error}` })
     }
 }
+
+export const getStockByIdProduct = async (req, res) => {
+    const { id } = req.params
+
+    try {
+        const product = await productoModel.findById(id)
+
+        if (product) {
+            return res.status(200).send({ stock: product.stock })
+        }
+
+        return res.status(404).send({ error: "Producto no encontrado" })
+
+    } catch (error) {
+        return res.status(500).send({ error: `Error en consultar stock ${error}` })
+    }
+}

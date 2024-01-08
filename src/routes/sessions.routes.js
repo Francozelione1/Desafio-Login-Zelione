@@ -11,7 +11,7 @@ sessionRouter.get('/login', getLogin) // RENDERIZA EL FORMULARIO DE LOGIN
 
 sessionRouter.post('/login', passport.authenticate("login"), postLogin) // LOGUEA UN USUARIO
 
-sessionRouter.get('/github', passport.authenticate('github', { scope: ['user:email'] }), getGithub) // CREA UN USUARIO CON GITHUB
+//sessionRouter.get('/github', passport.authenticate('github', { scope: ['user:email'] }), getGithub) // CREA UN USUARIO CON GITHUB
 
 sessionRouter.get('/githubSession', passport.authenticate('github'), getGithubSession) // LOGUEA UN USUARIO CON GITHUB
 

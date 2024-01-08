@@ -4,7 +4,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="css/{{rutaCSS}}.css">
-    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="http://localhost:4000/static/css/nav.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">    
+
+    <style>
+        body{
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
 
@@ -16,14 +23,8 @@
         crossorigin="anonymous">
     </script>
 
-    <script> 
-        let cid="{{cid}}"
-        let session={{session}} 
-        let nombre = "{{nombre}}" 
-    </script>
-
     <script src="js/{{rutaJS}}.js"></script>
-    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     
 </body>
 </html>

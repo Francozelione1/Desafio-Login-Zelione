@@ -32,10 +32,9 @@ export const initializePassport = () => {
 
     }))
 
-
     //done es como si fuera un res.status(), el callback de respuesta
     passport.use('register', new LocalStrategy(
-        { passReqToCallback: true, usernameField: 'email' }, async (req, username, password , done) => { //Defino como voy a registrar un user // Defino que mi username va a ser el email
+        { passReqToCallback: true, usernameField: 'email' }, async (req, username, password, done) => { //Defino como voy a registrar un user // Defino que mi username va a ser el email
 
             try {
                 const { first_name, last_name, email, age } = req.body
@@ -43,20 +42,20 @@ export const initializePassport = () => {
 
                 if (!first_name || !last_name || !email || !age || !password) {
                     //logger.error("Faltan datos para crear el usuario")
-					CustomError.createError({
-						name: 'Error de creación de usuario',
-						cause: generateUserErrorInfo({
-							first_name,
-							last_name,
-							email,
-							age,
-							password
-						}),
-						message: 'Error al crear usuario',
-						code: EErrors.MISSING_OR_INVALID_USER_DATA,
-					})
-				}
-                
+                    CustomError.createError({
+                        name: 'Error de creación de usuario',
+                        cause: generateUserErrorInfo({
+                            first_name,
+                            last_name,
+                            email,
+                            age,
+                            password
+                        }),
+                        message: 'Error al crear usuario',
+                        code: EErrors.MISSING_OR_INVALID_USER_DATA,
+                    })
+                }
+
                 const usuarioExistente = await userModel.findOne({ email: username })
                 if (usuarioExistente) {
                     logger.error("Usuario ya existente")
@@ -72,12 +71,14 @@ export const initializePassport = () => {
                         age: age
                     })
 
-                    /*if(!usuarioCreado){
-                        throw CustomError.createError("Error", "Error en la base de datos", "No se pudo crear el usuario", 2)
-                    }*/
+                    const user = await userModel.findOne({ email: email })
 
                     logger.info("Usuario creado")
-                    req.nombre = usuarioCreado.first_name
+                    req.user = user
+                    req.session.user = user
+                    req.session.nombre = user.first_name
+                    req.nombre = user.first_name
+                    req.cart = user.cart
                     return done(null, usuarioCreado)
                 }
             } catch (error) {
@@ -86,43 +87,41 @@ export const initializePassport = () => {
         }
     ))
 
-    passport.use("login", new LocalStrategy({passReqToCallback: true ,usernameField: 'email' }, async (req,username, password, done) =>{  //Defino como voy a loguear un user
+    passport.use("login", new LocalStrategy({ passReqToCallback: true, usernameField: 'email' }, async (req, username, password, done) => {  //Defino como voy a loguear un user
 
-        try {    
+        try {
             const user = await userModel.findOne({ email: username });
-    
+
             if (!user) {
-               logger.info("Usuario no encontrado")
-               return done(null, false, { message: 'Usuario no encontrado' })
+                logger.info("Usuario no encontrado")
+                return done(null, false, { message: 'Usuario no encontrado' })
             }
 
             if (validatePassword(password, user.password)) { // Valido la contraseña
-               req.nombre = user.first_name 
-               req.user = user
-               return done(null, user)
+                req.nombre = user.first_name
+                req.user = user
+                await userModel.findByIdAndUpdate(req.user._id, { last_connection: Date.now() }) // actualizo la ultima conexion del usuario
+                return done(null, user)
             }
-            /*else{
-                throw CustomError.createError("Error", "No se ingresó la contraseña correcta para ese usuario", "Contraseña incorrecta", 3)
-            }*/
-            
+
             logger.error("Contraseña invalida")
             return done(null, false, { message: 'Contraseña incorrecta' }) // Contraseña invalida
-           
+
         } catch (error) {
-           logger.error(error.message)
-           return done(null, error.message)
+            logger.error(error.message)
+            return done(null, error.message)
         }
 
     }))
 
     passport.use("github", new GithubStrategy({
-        clientID: process.env.CLIENT_ID,
+        clientID: process.env.CLIENT_ID, 
         clientSecret: process.env.CLIENT_SECRET,
-        callbackURL: process.env.CALLBACK_URL
-    }, async (accessToken, refreshToken, profile, done) => {
+        callbackURL: process.env.CALLBACK_URL,
+        passReqToCallback: true
+    }, async (req, accessToken, refreshToken, profile, done) => {
 
-        try{
-
+        try {
             const user = await userModel.findOne({ email: profile._json.email })
             if (!user) {
                 const usuarioCreado = await userModel.create({
@@ -132,24 +131,33 @@ export const initializePassport = () => {
                     age: 18, //Edad por defecto ya que no la sabemos
                     password: "password"
                 })
+                req.user = usuarioCreado
+                req.session.user = usuarioCreado
+                req.session.nombre = usuarioCreado.first_name
+                req.session.cart = usuarioCreado.cart
                 return done(null, usuarioCreado)
             }
             else {
+                req.user = user
+                req.session.user = user
+                req.session.nombre = user.first_name
+                req.session.cart = user.cart
                 return done(null, user)
             }
 
         }
-        catch(error){
-            return done(null, error.message)
+        catch (error) {
+            console.error('Error en la estrategia de GitHub:', error.message)
+            return done(error)
         }
 
     }))
 
     passport.serializeUser((user, done) => { //Activar la session del user
-        console.log(user);
+        //console.log(user);
         done(null, user._id)
     })
-    
+
     passport.deserializeUser(async (id, done) => { //Eliminar la session del user
         const user = await userModel.findById(id)
         done(null, user)

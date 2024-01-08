@@ -1,12 +1,259 @@
-<h3>Productos</h3>
+<style>
+  * {
+    box-sizing: border-box;
+  }
 
-{{#if nombre}}
-  <h1>Bienvenido/a, {{nombre}}</h1>
-{{/if}}
+  .mainProductos {
+    background-color: rgb(228, 195, 146);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 95vh;
+    padding-top: 50px;
+    background-size: cover;
+    padding-bottom: 30px;
+  }
 
-<div id="contenedorProductos"></div>
+  .tituloBienvenido {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    text-align: start;
+    padding-left: 20px;
+  }
 
-{{#if nombre}}
-    <button id="logout"></button>
-{{/if}}
+  .tituloProductos {
+    font-family: roboto-regular;
+    font-size: 25px;
+  }
 
+  #contenedorProductos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 50px;
+    place-items: center;
+    padding: 20px;
+    max-width: 100%;
+    width: 70%;
+  }
+
+  .navCarrito{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 40px;
+    width: 3%;
+  }
+
+  .imgCarrito {
+    width: 100%;
+    border-radius: 10px;
+    border: solid 2px black;
+  }
+
+  .producto {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 5px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    gap: 20px;
+    width: 80%;
+    text-align: center;
+    background-color: white;
+  }
+
+  .imgJuego {
+    height: 200px;
+    max-height: 200px;
+    width: 80%;
+    object-fit: contain;
+    border-radius: 10px;
+  }
+
+  .producto h4 {
+    margin: 10px 0;
+    font-size: 20px;
+    font-family: roboto-regular;
+  }
+
+  .producto p {
+    margin: 5px 0;
+  }
+
+  .btnComprar {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    width: 70%;
+    font-family: roboto-regular;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 10px;
+    display: inline-block;
+    font-size: 18px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
+
+  .contenedorLogout {
+    margin-top: 50px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    padding-left: 20px;
+  }
+
+  .logoutButton {
+    background-color: red;
+    color: whitesmoke;
+    padding: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+  }
+</style>
+
+<main class="mainProductos">
+
+  {{#if cartUser}}
+  <div class="idCartUser" data-cart-user="{{cartUser}}" data-es-Admin="{{esAdmin}}"></div>
+  {{/if}}
+
+  <div class="tituloBienvenido">
+    {{#if nombre}}
+    <h1 class="bienvenidoNombre">Bienvenido/a, {{nombre}}</h1>
+    {{/if}}
+  </div>
+
+  <h3 class="tituloProductos">Productos</h3>
+
+  <div id="contenedorProductos">
+    {{#each productos}}
+    <div class="producto">
+      <h4>{{getProp this 'title'}}</h4>
+      <img src="{{getProp this 'image'}}" class="imgJuego" alt="">
+      <p>Precio: {{getProp this 'price'}}$</p>
+      <button class="btnComprar" id="{{getProp this '_id'}}" data-product="{{json this}}"
+        data-cart-user="{{../cartUser}}">Agregar al carrito</button>
+    </div>
+    {{/each}}
+  </div>
+
+  <div class="contenedorLogout">
+    {{#if nombre}}
+    <button class="logoutButton" id="logout">Logout</button>
+    {{/if}}
+  </div>
+</main>
+
+<script>
+
+  document.addEventListener('DOMContentLoaded', (event) => {
+    const socket = io();
+    let esAdmin
+
+    // CUANDO EL USUARIO SE CONECTA SACO EL BOTON DE INICIAR SESION
+    if (document.querySelector('.bienvenidoNombre')) {
+      esAdmin = document.getElementsByClassName('idCartUser')[0].dataset.esAdmin
+      document.getElementsByClassName('iniciarSesion')[0].remove()
+
+      const logout = document.getElementById("logout")
+
+      logout.addEventListener("click", () => {
+        fetch("http://localhost:4000/api/sessions/logout", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((res) => res.json())
+          .then((res) => {
+            console.log(res)
+            window.location.href = res.url;
+          })
+          .catch((error) => console.log(error))
+      })
+    }
+
+    // CUANDO EL USUARIO CONECTADO ES ADMIN
+    if (esAdmin === 'true') {
+      document.querySelector('.contenedorNav').insertAdjacentHTML('beforeEnd', '<a href="http://localhost:4000/home/cargarJuegosForm" id="cargarProducto">CARGAR PRODUCTO</a>')
+      document.querySelector('.contenedorNav').insertAdjacentHTML('beforeEnd', '<a href="http://localhost:4000/api/users/modifyUsers" id="cargarProducto">MODIFICAR USUARIOS</a>')
+
+      document.querySelectorAll('.btnComprar').forEach(button => {
+        button.remove()
+      })
+    }
+    // CUANDO EL USUARIO CONECTADO NO ES ADMIN
+    if (esAdmin === 'false') {
+      let cartUser = document.getElementsByClassName("idCartUser")[0].dataset.cartUser;
+      document.getElementsByClassName('contenedorNav')[0].insertAdjacentHTML('beforeend', `<a href="http://localhost:4000/api/carts/userCart/${cartUser}" class="navCarrito"><img src="http://localhost:4000/static/images/carrito.png" class="imgCarrito"></a>`)
+    }
+
+    document.querySelectorAll('.btnComprar').forEach(button => {
+
+      const producto = JSON.parse(button.dataset.product);
+
+      if (producto.stock <= 0) {
+        button.disabled = true;
+        button.style.backgroundColor = 'grey';
+        button.parentElement.insertAdjacentHTML('beforeend', '<p class="sinStock">Sin stock</p>')
+      }
+
+      button.addEventListener('click', function () {
+        const product = JSON.parse(this.dataset.product);
+        const cartUser = this.dataset.cartUser;
+        if (cartUser) {
+          addToCart(product, cartUser);
+        }
+        else {
+          Toastify({
+            text: `Debe iniciar sesión para comprar`,
+            duration: 4000,
+            gravity: "top", // `top` or `bottom`
+            position: "right", // `left`, `center` or `right`
+            close: true,
+            backgroundColor: "linear-gradient(to right, #ff416c, #ff4b2b)"
+          }).showToast()
+        }
+      });
+    });
+
+    function addToCart(product, cartUser) {
+      const productoParaAgregar =
+        [{ idProd: product._id, quantity: 1 }]
+
+      if (cartUser) {
+        fetch(`http://localhost:4000/api/carts/${cartUser}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ productosParaAgregar: productoParaAgregar })
+        })
+          .then(response => { response.json() })
+          .then(data => {
+            Toastify({
+              text: `${product.title} fué añadido`,
+              duration: 1000,
+              gravity: "top", // `top` or `bottom`
+              position: "right", // `left`, `center` or `right`
+              close: true,
+              backgroundColor: "linear-gradient(to right, #ff416c, #ff4b2b)"
+            }).showToast();
+          })
+          .catch(error => {
+            console.log(error.message)
+          })
+      }
+    }
+  });
+
+</script>
