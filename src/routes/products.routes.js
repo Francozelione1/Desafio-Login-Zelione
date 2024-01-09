@@ -13,8 +13,8 @@ routerProd.get("/stock/:pid", getStockByIdProduct) // TRAE EL STOCK DEL PRODUCTO
 
 routerProd.post("/", validateProductData ,passportError('jwt'), authorization('admin') , postProduct) // CREA UN NUEVO PRODUCTO // SOLO ADMIN
 
-routerProd.put("/:pid", validateProductData ,passportError('jwt'), authorization('admin'), putProduct) // MODIFICA UN PRODUCTO // SOLO ADMIN
+routerProd.put("/:id", validateProductData ,passportError('jwt'), authorization('admin'), putProduct) // MODIFICA UN PRODUCTO // SOLO ADMIN
 
-routerProd.delete("/:pid", passportError('jwt'), authorization('admin'), deleteProduct) // ELIMINA UN PRODUCTO // SOLO ADMIN
+routerProd.delete("/:id", passportError('jwt'), authorization('admin'), deleteProduct) // ELIMINA UN PRODUCTO // SOLO ADMIN
 
 export default routerProd

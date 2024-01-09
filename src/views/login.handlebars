@@ -104,11 +104,11 @@
 <script>
 
     document.getElementById('github').addEventListener('click', function () {
-        window.location.href = "http://localhost:4000/api/sessions/githubSession";
+        window.location.href = "http://localhost:4000/api/session/githubSession";
     })
 
     document.getElementById('botonRegistrarse').addEventListener('click', function () {
-        window.location.href = "http://localhost:4000/api/users/register";
+        window.location.href = "http://localhost:4000/api/session/register";
     });
 
     document.getElementById('submitButton').addEventListener('click', function () {
@@ -116,7 +116,7 @@
         const password = document.getElementById('password').value;
 
         try {
-            fetch('http://localhost:4000/api/sessions/login', {
+            fetch('http://localhost:4000/api/session/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

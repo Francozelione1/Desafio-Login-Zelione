@@ -17,7 +17,7 @@ userRouter.delete("/deleteUser", authorization("admin"), deleteUser)// ELIMINA U
 
 userRouter.put("/modifyUser", authorization("admin"), modifyUser ) // MODIFICA UN USUARIO 
 
-userRouter.post("/register", validateUserData ,passport.authenticate("register"), postRegister) // REGISTRA UN USUARIO
+//userRouter.post("/register", validateUserData ,passport.authenticate("register"), postRegister) // REGISTRA UN USUARIO
 
 userRouter.delete("/", authorization("admin"), deleteInactiveUsers) // ELIMINA USUARIOS INACTIVOS  
 

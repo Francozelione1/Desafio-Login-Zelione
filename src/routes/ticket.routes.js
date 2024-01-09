@@ -4,6 +4,6 @@ import { finalizarCompra } from "../controllers/tickets.controller.js";
 
 const routerTicket = Router()
 
-routerTicket.get("/:cid/finalizarCompra", passportError('jwt'), authorization('user') ,finalizarCompra) // FINALIZA LA COMPRA
+//routerTicket.get("/:cid/finalizarCompra", passportError('jwt'), authorization('user') ,finalizarCompra) // FINALIZA LA COMPRA
 
 export default routerTicket

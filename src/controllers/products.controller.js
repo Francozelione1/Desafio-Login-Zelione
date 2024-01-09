@@ -48,7 +48,7 @@ export const validateProductData = (req,res,next) => {
 
     try {
        
-        if ((!title || !description || !code || !price || !stock || !category)) {
+        if ((!title && !description && !code && !price && !stock && !category)) {
             throw CustomError.createError({
                 name: EErrors.MISSING_REQUIRED_FIELDS.name,
                 cause: generateProductErrorInfo({ title, description, code, price, stock, category }),
@@ -91,20 +91,20 @@ export const postProduct = async (req, res) => {
 }
 
 export const putProduct = async (req, res) => {
-    const { pid } = req.params
+    const { id } = req.params
     const { title, description, code, price, stock, category } = req.body
     try {
 
-        if ((!title || !description || !code || !price || !stock || !category)) {
+        /*if ((!title || !description || !code || !price || !stock || !category)) {
             CustomError.createError({
                 name: 'Error de creación de producto',
                 cause: generateProductErrorInfo({ title, description, code, price, stock, category }),
                 message: 'Error al crear producto',
                 code: EErrors.MISSING_OR_INVALID_PRODUCT_DATA
             })
-        }
+        }*/
         
-        const product = await productoModel.findByIdAndUpdate(pid, { title, description, code, price, stock, category })
+        const product = await productoModel.findByIdAndUpdate(id, { title, description, code, price, stock, category }, { new: true })
 
         if (product) {
             return res.status(200).send(product)

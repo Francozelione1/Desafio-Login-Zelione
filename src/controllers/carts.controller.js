@@ -74,37 +74,27 @@ export const postCart = async (req, res) => {
 
 }
 
-export const putCart = async (req, res) => {
+export const postProductCart = async (req, res) => {
 
-    const { cid } = req.params
-    const { productosParaAgregar } = req.body
-
+    const { cid, id } = req.params
+    
     try {
-
+        
+        const productoExistente = await productoModel.findById(id)
+        
+        if (!productoExistente) {
+            return res.status(404).send({ resultado: "Producto no encontrado" })
+        }
+        
         const cart = await cartModel.findById(cid)
 
-        for (let productoAgregar of productosParaAgregar) {
-            
-            const productoExistente = await productoModel.findById(productoAgregar.idProd)
+        const productoEncontrado = cart.products.find(prod => prod.idProd == id)
 
-            /*if(productoAgregar.quantity > productoExistente.stock){
-                throw CustomError.createError("Error", "Error en los datos ingresados", "No hay stock suficiente", 3)
-            }*/
-
-            if(!productoExistente){
-                throw CustomError.createError("Error", "Error en los datos ingresados", "No existe tal producto", 3)
-            }
-
-            let productoEncontrado = cart.products.find(productoCarrito => productoCarrito.idProd == productoAgregar.idProd)
-
-            if (productoEncontrado) {
-                productoEncontrado.quantity += productoAgregar.quantity
-            }
-            else {
-                cart.products.push(productoAgregar)
-            }
-
-           //await productoModel.findByIdAndUpdate(productoAgregar.idProd, { $inc: { stock: -productoAgregar.quantity } }, { new: true })
+        if (productoEncontrado){
+            productoEncontrado.quantity += 1
+        }
+        else{
+            cart.products.push({ idProd: id, quantity: 1 })
         }
 
         const cartUpdated = await cartModel.findByIdAndUpdate(cid, cart, { new: true })
@@ -121,17 +111,17 @@ export const putCart = async (req, res) => {
 
 export const putProductCart = async (req, res) => {
 
-    const { cid, pid } = req.params
-    const { productoParaActualizar } = req.body
+    const { cid, id } = req.params
+    const { quantity } = req.body
 
     try {
 
         const cart = await cartModel.findById(cid)
 
-        const productoEncontrado = cart.products.find(prod => prod.idProd == pid)
+        const productoEncontrado = cart.products.find(prod => prod.idProd == id)
 
         if (productoEncontrado) {
-            productoEncontrado.quantity += productoParaActualizar.quantity
+            productoEncontrado.quantity += quantity
             await cart.save()
             res.status(200).send({ resultado: "OK", message: cart })
         } else {

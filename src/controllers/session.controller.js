@@ -81,7 +81,7 @@ export const getLogout = async (req, res) => {
         await userModel.findByIdAndUpdate(req.user._id, { last_connection: Date.now() }) // actualizo la ultima conexion del usuario
         req.session.destroy()
         res.clearCookie('jwtCookie')
-        return res.status(200).send({url: "http://localhost:4000/api/sessions/login", mensaje: 'Login eliminado'})
+        return res.status(200).send({url: "http://localhost:4000/api/session/login", mensaje: 'Login eliminado'})
     }
     catch(error){
         return res.status(500).send({ message: error.message})

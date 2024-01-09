@@ -13,11 +13,11 @@ const {expect} = chai
 
 const requester = supertest('http://localhost:4000')
 
-describe("Tests de Productos", async function() {
+describe("Tests de Carts", async function() {
 
-    it('Test endpoint: GET /api/products/, se espera un array de productos', async () => {
-        const response = await requester.get('/api/products/')
-        expect(response._body.docs).to.be.an('array')
+    it('Test endpoint: POST /api/carts/:cid, se espera un 201 de status code por el carrito creado', async () => {
+        const response = await requester.post(`/api/carts/`)
+        expect(response.statusCode).to.be.equal(201)
     })
 
 })

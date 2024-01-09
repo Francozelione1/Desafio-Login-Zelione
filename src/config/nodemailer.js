@@ -20,8 +20,8 @@ export const sendEmailDeleteAccount = async (email) => {
     const mailOptions = {
         from: 'proyectoBackend796@gmail.com', // Correo del remitente
         to: email, // Correo del destinatario, que se pasa como argumento a la función
-        subject: 'Asunto del correo', // Asunto del correo
-        text: 'Contenido del correo' // Contenido del correo
+        subject: 'Cuenta eliminada', // Asunto del correo
+        text: 'Su cuenta ha sido eliminada por inactividad' // Contenido del correo
     }
     // Enviar el correo
     try {
@@ -37,7 +37,7 @@ export const sendEmailPurchase = async (email, subject, text) => {
         from: 'proyectoBackend796@gmail.com',
         to: email,
         subject: subject,
-        text: text
+        html: text
     }
 
     try{

@@ -57,7 +57,49 @@ export const finalizarCompra = async (req, res) => {
             for (const prod of productos){
                 await prod.save()
             }
-            sendEmailPurchase(`${nuevoTicket.purchaser}`, "Compra realizada", `Resumen: ${nuevoTicket.products}, Total: ${nuevoTicket.amount}` )
+            sendEmailPurchase(`${nuevoTicket.purchaser}`, "Compra realizada", `
+            <html>
+            <head>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        background-color: #f5f5f5;
+                        margin: 0;
+                        padding: 0;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+                    }
+            
+                    .container {
+                        background-color: #fff;
+                        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+                        padding: 20px;
+                        border-radius: 8px;
+                    }
+            
+                    h1 {
+                        font-size: 24px;
+                        text-align: center;
+                        color: #333;
+                    }
+            
+                    p {
+                        font-size: 16px;
+                        margin: 10px 0;
+                    }
+            
+                </style>
+            </head>
+            
+            <body>
+                <div class="container">
+                    <p>Total: ${nuevoTicket.amount} </p>
+                </div>
+            </body>
+            </html>
+            ` )
             res.status(200).send({ message: nuevoTicket, status: 200 })
         }
     }

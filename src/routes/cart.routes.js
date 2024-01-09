@@ -1,7 +1,8 @@
 import { Router } from "express";
 import cartModel from "../models/carts.model.js";
 import { passportError, authorization } from "../utils/messageErrors.js";
-import { getCarts, getCartById, postCart, putCart, putProductCart ,deleteCart, deleteProductCart, getCartUserById, resetCart } from "../controllers/carts.controller.js";
+import { getCarts, getCartById, postCart, postProductCart, putProductCart ,deleteCart, deleteProductCart, getCartUserById, resetCart } from "../controllers/carts.controller.js";
+import { finalizarCompra } from "../controllers/tickets.controller.js";
 
 const routerCart = Router()
 
@@ -13,11 +14,13 @@ routerCart.get("/userCart/:cid", passportError('jwt'), authorization('user'), ge
 
 routerCart.post("/", postCart) // CREA UN NUEVO CARRITO
 
-routerCart.put("/:cid", passportError('jwt') ,authorization('user') ,putCart) // AGREGA UN PRODUCTO AL CARRITO
+routerCart.post("/:cid/product/:id", passportError('jwt') ,authorization('user') ,postProductCart) // AGREGA UN PRODUCTO AL CARRITO
 
-routerCart.put("/:cid/products/:pid", passportError('jwt'), authorization('user') ,putProductCart) // MODIFICA LA CANTIDAD DE UN PRODUCTO EN UN CARRITO
+routerCart.post("/:cid/checkout", passportError('jwt'), authorization('user') , finalizarCompra) // VACÍA UN CARRITO Y CREA UN TICKET CON LOS PRODUCTOS DEL CARRITO
 
-routerCart.delete("/:cid/products/:pid", passportError('jwt'), authorization('user') ,deleteProductCart) // ELIMINA UN PRODUCTO DE UN CARRITO
+routerCart.put("/:cid/product/:id", passportError('jwt'), authorization('user') ,putProductCart) // MODIFICA LA CANTIDAD DE UN PRODUCTO EN UN CARRITO
+
+routerCart.delete("/:cid/product/:pid", passportError('jwt'), authorization('user') ,deleteProductCart) // ELIMINA UN PRODUCTO DE UN CARRITO
 
 routerCart.delete("/:cid/resetCart", authorization('user'), resetCart) // VACÍA UN CARRITO
 

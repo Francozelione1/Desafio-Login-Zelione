@@ -4,8 +4,10 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/app.js",
-    "test": "mocha --timeout 5000 src/test/routes/products.test.js"
+    "dev": "node src/app.js",
+    "testProducts": "mocha --timeout 9000 src/test/routes/products.test.js",
+    "testUsers": "mocha --timeout 9000 src/test/routes/users.test.js",
+    "testCarts": "mocha --timeout 9000 src/test/routes/carts.test.js"
   },
   "repository": {
     "type": "git",
