@@ -1,6 +1,6 @@
-# Nombre del Proyecto
+# Proyecto-Final-Backend
 
-Breve descripción del proyecto.
+Aplicacion backend para un ecommerce.
 
 ## Índice
 
@@ -22,11 +22,9 @@ La aplicación está alojada en el puerto 4000 y la ruta principal es `localhost
 
 ### Ejemplos de Uso
 
-Proporciona ejemplos sobre cómo usar la aplicación.
 
 ## Características
 
-Descripción de las características del proyecto.
 
 ## Licencia
 
